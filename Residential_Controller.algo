@@ -25,6 +25,7 @@ sequence initializeVariables:
       set targetFloor to undefined
       set goingUp to false
       set goingDown to false
+      set message to undefined
 
   endsequence
 
@@ -77,7 +78,7 @@ sequence RequestRouter using targetFloor, currentfloor
   add targetFloor to goingUpQueue
   endif
 
-add targetFloor to goingDownQueue
+  add targetFloor to goingDownQueue
 
 endsequence
 
@@ -101,8 +102,18 @@ sequence openDoors:
     timer equals timer - 1
     if timer equals 0
     call doorSecurity
+    call checkWeightLimit
 
 endsequence
+
+-----------
+
+sequence Alarm using selectedAlarm, elevator
+  case (selectedAlarm):
+    selectedAlarm equals Weight:
+      set message equals "the maximum weight for this elevator has been reached, please wait for another elevator"
+    selectedAlarm equals Doors: 
+      set message equals "for your safety, please step away from the doors"
 
 -----------
 
@@ -110,12 +121,23 @@ sequence doorSecurity:
 
   if sensor detects person
     set doorsAreOpen to true
-      return timer = timer + 1000
+      while sensor detects person
+        call Alarm using elevator, Doors
+        return timer = timer + 1000
 
   else set doorsAreOpen to false
 
 endsequence
 
+-----------
+
+sequence checkWeightLimit
+  if sensor detects weight > 2500 pounds
+    while weight > 2500
+    call Alarm using Weight
+    return doorsAreOpen = true
+  
+endsequence
 -----------
 
 sequence idleBeforeReturningToIdealPoint:
@@ -165,7 +187,7 @@ sequence sendElevatorUp using targetFloor:
         if currentfloor is in goingUpQueue
           set goingUp equals false
           remove currentfloor from goingUpQueue
-          call openDoors
+          call openDoors using winnerElevator
           set goingUp equals true
         else loop until currentfloor equals targetFloor
       
@@ -193,7 +215,7 @@ sequence sendElevatorDown using targetFloor:
         if currentfloor is in goingDownQueue
           set goingDown equals false
           remove currentfloor from goingDownQueue
-          call openDoors
+          call openDoors using winnerElevator
           set goingDown equals true
         else loop until currentfloor equals targetFloor
       
