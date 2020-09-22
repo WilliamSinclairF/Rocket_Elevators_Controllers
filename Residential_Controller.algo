@@ -1,6 +1,6 @@
 //initial sequence to determine base variables
 
-sequence initialize:
+sequence initializeVariables:
 
   sequence setBuildingSpecs using input1, input2, input3, input4
     prompt user for inputs
@@ -97,10 +97,22 @@ sequence openDoors:
 
   set doorsAreOpen to true
   set timer to 5000
-  while timer is not 0
+  while timer is not 0 and doorsAreOpen equals true
     timer equals timer - 1
     if timer equals 0
-    set doorsAreOpen to false
+    call doorSecurity
+
+endsequence
+
+-----------
+
+sequence doorSecurity:
+
+  if sensor detects person
+    set doorsAreOpen to true
+      return timer = timer + 1000
+
+  else set doorsAreOpen to false
 
 endsequence
 
@@ -190,10 +202,10 @@ sequence sendElevatorDown using targetFloor:
 
 endsequence
 
+-----------
 
-
-
-      
+// "call all sequences needed to function"
+call initializeVariables, sendElevatorToPreferedLocation, waitForACall, waitForFloorSelection
  
 
 
