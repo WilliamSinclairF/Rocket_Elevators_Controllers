@@ -1,0 +1,203 @@
+//initial sequence to determine base variables
+
+sequence initialize:
+
+  sequence setBuildingSpecs using input1, input2, input3, input4
+    prompt user for inputs
+    repeat until all inputs > 0
+    set floors to input1
+    set basements to input2
+    set columns to input3
+    set elevators to input4
+  endsequence
+
+  sequence setElevatorSpecs:
+    set doorsAreOpen to false
+
+    for each floor in floors 
+      set elevatorUpButton to 1
+      set elevatorDownButton to 1
+
+    for each elevator in elevators:
+      set floorRequestButtons to length of floors
+      set elevatorLocation to undefined
+      set currentfloor to preferedLocation or undefined
+      set targetFloor to undefined
+      set goingUp to false
+      set goingDown to false
+
+  endsequence
+
+  sequence setElevatorQueue:
+    set goingUpQueue to undefined
+    set goingDownQueue to undefined
+  endsequence
+
+  sequence setPreferedElevatorLocations:
+    set floorsPerElevator to floors / elevators
+    set preferedLocation of elevator at index 0 in elevators to floor 1
+
+    if elevators > 1:
+    for each elevator in elevators:
+      set preferedLocation of elevator to index of elevator + floorsPerElevator
+    endif
+
+endsequence
+
+-----------
+
+sequence sendElevatorToPreferedLocation:
+  if length of goingUpQueue equals 0 & length of goingDownQueue equals 0
+    for each elevator in elevators:
+      set elevatorLocation to preferedLocation
+endsequence
+
+-----------
+
+sequence waitForACall:
+for each button in elevatorUpButton and elevatorDownButton:
+  if button is pressed: call addRequestToQueue using currentfloor, buttonPressed
+    else call waitForACall
+endsequence
+
+-----------
+
+sequence waitForFloorSelection using targetFloor, currentfloor
+for each elevator in elevators
+  for each button in floorRequestButtons
+  if button is pressed call RequestRouter using targetFloor, currentfloor
+    else call waitForFloorSelection
+
+endsequence
+
+-----------
+
+sequence RequestRouter using targetFloor, currentfloor
+  if targetFloor > currentfloor
+  add targetFloor to goingUpQueue
+  endif
+
+add targetFloor to goingDownQueue
+
+endsequence
+
+-----------
+
+sequence addRequestToQueue using currentfloor, buttonPressed
+  
+  case buttonPressed:
+    elevatorUpButton: add currentfloor to goingUpQueue, call sendElevatorUp using currentfloor
+    elevatorDownButton: add currentfloor to goingDownQueue, call sendElevatorDown using currentfloor
+
+endsequence
+
+-----------
+
+sequence openDoors:
+
+  set doorsAreOpen to true
+  set timer to 5000
+  while timer is not 0
+    timer equals timer - 1
+    if timer equals 0
+    set doorsAreOpen to false
+
+endsequence
+
+-----------
+
+sequence idleBeforeReturningToIdealPoint:
+  set timer equals 30000
+  while goingUpQueue and goingDownQueue equals 0
+    timer equals timer - 1
+    if timer equals 0
+    set elevatorLocation equals preferedLocation
+endsequence
+-----------
+
+sequence GetBestElevator using targetFloor, direction:
+  for each elevator in elevators:
+    set outcome equals targetFloor - currentfloor
+    add (outcome, elevator) to possibleOutcomes
+
+    case (direction):
+    direction equals up:
+        set winnerElevator equals compute elevator with lowest value outcome in possibleOutcomes
+        set targetFloor of winnerElevator to targetFloor
+        return winnerElevator
+
+    direction equals down:
+        set winnerElevator equals compute elevator with highest value outcome in possibleOutcomes
+        set targetFloor of winnerElevator to targetFloor
+        return winnerElevator
+
+endsequence
+
+-----------
+
+
+sequence sendElevatorUp using targetFloor:
+  set availableElevators equals filter elevators with targetFloor equals undefined
+
+  if length of availableElevators equals 0
+    set elevatorToUse equals call GetBestElevator using targetFloor, direction: up
+  
+  else for each elevator with targetFloor equals undefined:
+      set elevatorScore equals compute elevator(currentfloor) - targetFloor
+      set elevatorToUse equals compute elevator with lowest elevatorScore
+    
+   set goingUp of winnerElevator to true
+
+    sequence:
+      while currentfloor of winnerElevator is not targetFloor:
+        if currentfloor is in goingUpQueue
+          set goingUp equals false
+          remove currentfloor from goingUpQueue
+          call openDoors
+          set goingUp equals true
+        else loop until currentfloor equals targetFloor
+      
+      if length of goingUpQueue equals 0:
+        call idleBeforeReturningToIdealPoint
+
+endsequence
+
+-----------
+
+sequence sendElevatorDown using targetFloor:
+  set availableElevators equals filter elevators with targetFloor equals undefined
+
+  if length of availableElevators equals 0
+    set elevatorToUse equals call GetBestElevator using targetFloor, direction: down
+  
+  else for each elevator with targetFloor equals undefined:
+      set elevatorScore equals compute elevator(currentfloor) - targetFloor
+      set elevatorToUse equals compute elevator with highest elevatorScore
+    
+   set goingDown of winnerElevator to true
+
+    sequence:
+      while currentfloor of winnerElevator is not targetFloor:
+        if currentfloor is in goingDownQueue
+          set goingDown equals false
+          remove currentfloor from goingDownQueue
+          call openDoors
+          set goingDown equals true
+        else loop until currentfloor equals targetFloor
+      
+      if length of goingDownQueue equals 0:
+        call idleBeforeReturningToIdealPoint
+
+endsequence
+
+
+
+
+      
+ 
+
+
+      
+
+
+
