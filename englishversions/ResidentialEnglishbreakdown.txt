@@ -1,0 +1,59 @@
+wait to be powered on
+
+once powered on, check sensors to make sure everything is fully operatational
+if system is not fully operatational, send message to operator and power off
+
+power on all buttons in all elevators and every floor
+
+if not all buttons are functional, alert operator but continue sequence - only defective elevator has to go offline
+if only one elevator, go to ground floor and begin idling
+if more than one elevator, send first elevator to ground and spread other elevators: get elevator spacing (ES) by
+dividing number of floors by number of elevators and space out each elevator: 
+for each elevator, start from 1st floor, add ES then send elevator to floor that equals floor + ES
+
+when an elevator is requested with call buttons:
+1) check current floor of all elevators
+if current floor of one of the elevators equals requested floor, open the elevator doors, remove the floor from the request queue
+else - if an elevator is moving in direction of new requested floor, add new requested floor to elevator's queue,
+stop moving elevator at requested floor, remove requested floor from queue and wait for a floor to be requested if no floors were already requested
+if no elevators are moving in direction of requested floor, add requested floor to queue of closest idle elevator, then send it to requested floor
+if no elevators are idle, wait for first elevator that stops in opposite direction, add requested floor to its queue and send it to requested floor
+
+when a target floor is picked with floor request buttons:
+1) check current floor of elevator
+2) if current floor of the elevator from which the floor was requested equals requested floor, 
+open the elevators doors, remove the floor from the request queue
+3) otherwise, 
+
+sort requested target floors of elevator by:
+a) ascending order if elevator is travelling up
+b) descending order if elevator is travelling down
+
+if added target floor is lower than the highest requested floor in the direction the elevator is currently travelling, 
+finish all floors in current direction then head to direction of the target floor, sort queue based on direction of travel
+
+else sort requested target floors based on direction of travel and go to each floor
+
+while elevator is moving:
+if new floor is requested and new floor is:
+- higher than current target floor if going up 
+or
+- lower than current target floor if going down
+set new target floor to new floor
+else leave new requested floor for another elevator
+
+when no floors are in request queue:
+send elevators to default location after idle timer
+
+every time doors open:
+doors open = true
+countdown 5 seconds
+while counting down, check that weight is below elevators maximum
+if weight limit is reached, play warning message, call security
+if sensors detect movement in door, add to countdown
+if 20 seconds or more were added to timer due to movement, play warning message, call security
+else doors open = false
+
+before every movement:
+check all sensors
+if problem is detected, remain at current floor, call security with relevant error code
