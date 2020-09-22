@@ -1,7 +1,23 @@
-"initial sequence:"
+SEQUENCE OperateAllSystems
+  CALL PowerOnSequence
+  IF columnPower = true 
+    CALL systemCheck
+      ELSE RETURN 
+
+  IF systemCheck = true 
+    CALL elevatorCheck
+      ELSE RETURN 
+
+  IF elevatorCheck = true
+    CALL setInitialElevatorLocations
+    CALL awaitCall
+    CALL awaitFloorRequest
+      ELSE RETURN 
+ENDSEQUENCE
+
+
 SEQUENCE PowerOnSequence:
 SET columnPower TO false
-"wait to be powered on"
 await operator input
 IF operator input: columnPower = true
 REPEAT UNTIL columnPower = true
@@ -34,10 +50,6 @@ SET PeakTimes TO list: Morning: 7:00-9:00, Evening: 16:00 - 19:00
         SET score TO empty    //"will be a number"
         SET status TO disabled 
         SET elevatorErrorCode TO none   //"will be a string"
-
-"once powered on, check sensors to make sure everything is fully operatational"
-"if system is not fully operatational, send message to operator and power off"
-
 ENDSEQUENCE
 
 
@@ -70,6 +82,7 @@ SEQUENCE elevatorCheck FOR EACH elevator in elevators
       SET status OF elevator TO "disabled"
       ELSE SET status OF elevator TO "active"
     ENDSEQUENCE
+ENDSEQUENCE
  
 
 SEQUENCE setInitialElevatorLocations
@@ -90,41 +103,38 @@ SEQUENCE setInitialElevatorLocations
     SET maxElevatorIdle TO 5 minutes
     SET defaultFloor OF elevator at first index in elevators TO floor 1
     SET defaultFloor OF all other elevators TO index of elevator + (floors / length OF elevators)
-
 ENDSEQUENCE
 
 
 SEQUENCE IsItPeakTime USING Date, CurrentTime
+  CASE Date = Saturday: 
+  FOR EACH elevator in elevators
+    SET maxElevatorIdle TO 5 minutes
+  RETURN false
 
-CASE Date = Saturday: 
-FOR EACH elevator in elevators
-  SET maxElevatorIdle TO 5 minutes
-RETURN false
+  CASE Date = Sunday: 
+  FOR EACH elevator in elevators
+    SET maxElevatorIdle TO 5 minutes
+  RETURN false
 
-CASE Date = Sunday: 
-FOR EACH elevator in elevators
-  SET maxElevatorIdle TO 5 minutes
-RETURN false
+  IF CurrentTime > 6:30 AND < 9:30
+    FOR EACH elevator in elevators:
+      SET maxElevatorIdle TO 1 minute
+      IF elevators = 1
+      SET defaultFloor TO floors / 2
+      SET targetFloor = defaultFloor
+    
+    ELSE SET defaultFloor OF elevator at first index in elevators TO floor 1
+      SET defaultFloor OF all other elevators TO index of elevator + (floors / (length OF elevators / 2))
+  ENDIF
 
-IF CurrentTime > 6:30 AND < 9:30
-  FOR EACH elevator in elevators:
-    SET maxElevatorIdle TO 1 minute
-    IF elevators = 1
-    SET defaultFloor TO floors / 2
-    SET targetFloor = defaultFloor
-  
-  ELSE SET defaultFloor OF elevator at first index in elevators TO floor 1
-    SET defaultFloor OF all other elevators TO index of elevator + (floors / (length OF elevators / 2))
-ENDIF
-
-ELSE IF CurrentTime > 15:30 AND < 20:30
-  FOR EACH elevator in elevators:
-    SET maxElevatorIdle TO 1 minute
-    SET defaultFloor TO 1
-    SET targetFloor = defaultFloor
-ENDIF
-
-RETURN TRUE
+  ELSE IF CurrentTime > 15:30 AND < 20:30
+    FOR EACH elevator in elevators:
+      SET maxElevatorIdle TO 1 minute
+      SET defaultFloor TO 1
+      SET targetFloor = defaultFloor
+  ENDIF
+  RETURN TRUE
 ENDSEQUENCE
 
 
@@ -335,7 +345,6 @@ SEQUENCE WeightSensors
     WHILE weightSensor > 2500
     CALL alert operator
     LOOP UNTIL weightSensor < 2500
-    
 ENDSEQUENCE
 
 
@@ -353,23 +362,4 @@ SEQUENCE FloorRequestButtonPressed USING elevator, requestedFloor
   LOOP UNTIL elevator direction = 0 THEN 
     elevator direction = -1
     targetFloor = requestedFloor
-
-ENDSEQUENCE
-
-
-SEQUENCE OperateAllSystems
-  CALL PowerOnSequence
-  IF columnPower = true 
-    CALL systemCheck
-      ELSE RETURN 
-
-  IF systemCheck = true 
-    CALL elevatorCheck
-      ELSE RETURN 
-
-  IF elevatorCheck = true
-    CALL setInitialElevatorLocations
-    CALL awaitCall
-    CALL awaitFloorRequest
-      ELSE RETURN 
 ENDSEQUENCE
