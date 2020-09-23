@@ -1,52 +1,92 @@
+// "this is placed first for clarity but its order would most likely be different in a real coding environment"
+
+SEQUENCE AllSystemsGo
+  IF batteriesAreOn = false
+    CALL InitialSetup
+
+  ELSE 
+    CALL AssignColumnsToFloors
+    CALL SetVariables
+    CALL systemCheck
+    CALL elevatorCheck
+    CALL setInitialElevatorLocations
+    CALL awaitCall
+    CALL awaitFloorRequest
+ENDSEQUENCE
+
+CALL AllSystemsGo
+
 SEQUENCE InitialSetup
 
-SET systemPower TO false
-await operator input
-IF operator input: systemPower = true
-REPEAT UNTIL systemPower = true
+  SET systemPower TO false
+  await operator input
+  IF operator input: systemPower = true
+  REPEAT UNTIL systemPower = true
 
-SET batteries TO await operator input
-PROMT FOR OPERATOR INPUT: "How Many Batteries Would You Like To Set Up?"
-REPEAT UNTIL batteries > 1
+  SET batteries TO await operator input
+  PROMT FOR OPERATOR INPUT: "How Many Batteries Would You Like To Set Up?"
+  REPEAT UNTIL batteries > 1
 
-FOR EACH battery in batteries:
-PAUSE LOOP THEN 
-PROMT FOR OPERATOR INPUT: "How Many Columns Are There In Battery #(battery at current index)?"
-SET columns = total received from prompts
-REPEAT UNTIL all batteries have columns assigned
+  FOR EACH battery in batteries:
+    PAUSE LOOP THEN 
+    PROMT FOR OPERATOR INPUT: "How Many Columns Are There In Battery #(battery at current index)?"
+    SET columns = total received from prompts
+    REPEAT UNTIL all batteries have columns assigned
 
-FOR EACH column in columns
-PAUSE LOOP THEN 
-PROMT FOR OPERATOR INPUT: "How Many Elevators Are There In Column #(column at current index)?"
-SET elevators = total received from prompts
-REPEAT UNTIL all columns have elevators assigned
+    FOR EACH column in columns
+      PAUSE LOOP THEN 
+      PROMT FOR OPERATOR INPUT: "How Many Elevators Are There In Column #(column at current index)?"
+      SET elevators = total received from prompts
+    REPEAT UNTIL all columns have elevators assigned
+
+SET batteriesAreOn TO true
+
+CALL BuildingSpecs
 
 ENDSEQUENCE
 
 SEQUENCE BuildingSpecs
-SET floors TO PROMT FOR OPERATOR INPUT: "How Many Floors Are There In The Building?"
-SET basements TO PROMT FOR OPERATOR INPUT: "How Many Basements Are There In The Building?"
-SET batteries TO batteries
-REPEAT UNTIL floors & basements > 0
+  SET floors TO PROMT FOR OPERATOR INPUT: "How Many Floors Are There In The Building?"
+  SET basements TO PROMT FOR OPERATOR INPUT: "How Many Basements Are There In The Building?"
+  SET batteries TO batteries
+  REPEAT UNTIL floors & basements > 0
+
+  FOR EACH floors in BuildingSpecs:
+    FOR EACH floor in floors
+      SET waitTime TO 0
+      SET upCallButtons TO 1
+      SET downCallButtons TO 1
+      SET floorDisplay TO 1
 ENDSEQUENCE
 
-SET PeakTimes TO list: Morning: 7:00-9:00, Evening: 16:00 - 19:00
+SEQUENCE AssignColumnsToFloors
+  FOR EACH column in columns:
+    IF index OF column = first index
+  //"to make things easier, the last basement is considered the first floor"
+      SET StartingFloor = 1
+  //"total number of basements + 1 for first floor"
+      SET EndingFloor = length OF basements + 1
 
-  FOR EACH floors in Building:
-    SET waitTime TO 0
-    SET upCallButtons TO 1
-    SET downCallButtons TO 1
-    SET floorDisplay TO 1
+    "column 1: 1 to 6 + firstfloor(7)"
+    "column 2: 8 to 26 (18 floors) + firstfloor(floor 7)"
+    "column 3: 27 to 46 (19 floors) + firstfloor(floor 7)"
+    "column 4: 47 to 66 (19 floors) + firstfloor(floor 7)"
 
+    ELSE 
+      SET gap = (floors - length OF basements) / (columns - 1) -1
+      SET StartingFloor = (EndingFloor value OF column at previous index) + 1
+      SET EndingFloor = startingFloor OF current index + gap
+      IF current index is second index in columns
+        SET endingFloor TO endingFloor - 1
+        ENDIF
 ENDSEQUENCE
 
 
 SEQUENCE SetVariables
-
-//"if the variable is none, it's a regular old variable. If it's empty, it's an empty list/array"
+//"if the variable is none, it's a regular old variable with no value. If it's empty, it's an empty list/array"
+SET firstFloor TO length OF basements + 1
 
   FOR EACH battery in batteries
-    SET requestedFloors TO empty
     SET columns TO columns received FROM previous operator input
 
     FOR EACH column in columns
@@ -58,14 +98,15 @@ SEQUENCE SetVariables
       SET requestedFloors TO empty 
 
       FOR EACH elevator in elevators:
-        SET defaultFloor TO length OF basements + 1
+        SET column TO column
+        SET defaultFloor TO firstFloor
         SET StartingFloor TO column StartingFloor
-        SET endingFloor TO column endingFloor
+        SET EndingFloor TO column EndingFloor
         SET elevatorDisplay TO 1
         SET elevatorDisplayMessage TO none
         SET currentFloor TO none
         SET targetFloor TO none 
-        SET nextStopss TO empty 
+        SET nextStops TO empty 
         SET maxElevatorIdle to 30 seconds
         SET floorRequestButtons TO EACH number FROM column startingFloor TO column endingFloor
         SET direction TO empty   //"will be 1 for UP, -1 for DOWN, 0 for IDLE"
@@ -75,34 +116,6 @@ SEQUENCE SetVariables
         SET elevatorErrorCode TO none
 
         CALL AssignColumnsToFloors
-ENDSEQUENCE
-
-SEQUENCE AssignColumnsToFloors
-  FOR EACH column in columns:
-    IF index OF column = first index
-  //"to make things easier, the last basement is considered the first floor"
-      SET StartingFloor = 1
-  //"total number of basements + actual first floor"
-      SET EndingFloor = length OF basements + 1
-
-    ELSE SET StartingFloor = (EndingFloor value OF column at previous index) + 1
-  //"this is to space floors out evenly every time the loop runs, 
-    we dont need a gap the first time around so it starts as nothing but we do afterwards"
-      SET gap = none
-  //"we remove 1 from columns here because the first column doesn't handle the same ratio of floors so it's excluded"
-      SET EndingFloor = floors / (columns - 1) + gap
-      IF NEXT index exists, gap = gap + floors / (columns - 1)
-      IF current index is last in list, EndingFloor = floors
-      REPEAT LOOP UNTIL index = length of columns
-
-      "expected output with 66 floors (including 6 basements): 
-      column 1: startingFloor: last basement endingFloor: 1
-      column 2: startingFloor: 2 endingFloor: 20
-      column 3: startingFloor: 21 endingFloor: 40
-      column 4: startingFloor: 41 endingFloor: 60
-
-      (all elevators in all columns will be allowed to go to the first floor as well)
-      "
 ENDSEQUENCE
 
 
@@ -154,51 +167,51 @@ SEQUENCE setInitialElevatorLocations
   ELSE
   FOR EACH column in columns
     FOR EACH elevator in elevators
-      SET defaultFloor TO length OF basements + 1
+      SET defaultFloor TO firstFloor
 ENDSEQUENCE
 
 
 SEQUENCE IsItPeakTime USING Date, CurrentTime
   CASE Date = Saturday: 
-  FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 5 minutes
-  RETURN false
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      SET maxElevatorIdle TO 5 minutes
+    RETURN false
 
   CASE Date = Sunday: 
-  FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 5 minutes
-  RETURN false
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      SET maxElevatorIdle TO 5 minutes
+    RETURN false
 
   IF CurrentTime > 6:30 AND < 9:30
-    FOR EACH elevator in elevators:
-      SET maxElevatorIdle TO 0
-      SET defaultFloor TO length OF basements + 1
+    FOR EACH column in columns
+      FOR EACH elevator in elevators:
+        SET maxElevatorIdle TO 0
+        SET defaultFloor TO firstFloor
   ENDIF
 
   ELSE IF CurrentTime > 15:30 AND < 20:30
-  FOR EACH column in columns 
-    IF index OF current column > first index OF columns
-    FOR EACH elevator in elevators:
-      SET maxElevatorIdle TO 0
-      //"this should set the first 2 elevators in each column to the first floor and the rest will be spaced out evenly across the floors assigned to them"
-      IF index of current elevator < elevators in column / 2 //"column has 4 elevators so 4/2 = 2"
-      SET defaultFloor TO 1
-      ENDIF
 
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      IF index of elevator < length OF elevators / 2
+        SET defaultFloor TO firstFloor
+   
       ELSE
-      SET elevator defaultFloor TO ROUND DOWN: ((column endingFloor OF current elevator - column startingFloor OF current elevator) / (elevators in column / 2))
-      INCREMENT elevator defaultFloor by initial value OF elevator defaultFloor EACH LOOP
-  ENDIF
+      SET Gap TO (endingFloor - startingFloor) / (length OF elevators IN column / 2)
+      SET defaultFloor TO (ROUNDED UP(Gap + startingFloor -2) / 2)
+
   RETURN TRUE
 ENDSEQUENCE
-
 
 
 SEQUENCE SetRush USING requestLocation
 RushList = EMPTY
 
-FOR EACH floor in building
-  GET waitTime IF > 60 seconds
+FOR EACH floors in BuildingSpecs
+  FOR EACH floor in floors
+  GET waitTime IF > 45 seconds
   ADD floor, waitTime TO RushList
 
 WHILE RushList NOT EMPTY
@@ -211,13 +224,19 @@ ENDSEQUENCE
 
 
 SEQUENCE elevatorIsRequested USING requestLocation:
-SET Scores = empty
-SET selectedColumn = none
+  SET selectedColumn = none
+  SET elevatorsMovingUp TO EMPTY
+  SET elevatorsMovingDown TO EMPTY
+
 
 
   FOR EACH column in columns
-    IF column startingFloor IS = OR > THAN requestLocation AND column requestLocation IS < THAN endingFloor
+    IF column startingFloor IS = OR > THAN requestLocation AND requestLocation IS < THAN column endingFloor
       SET selectedColumn TO column
+    
+    ELSE IF requestLocation = firstFloor
+
+
     REPEAT UNTIL selectedColumn IS NOT none
 
     FOR EACH elevator in selectedColumn elevators
@@ -228,76 +247,142 @@ SET selectedColumn = none
       ELSE END LOOP
       
       FOR EACH elevator in selectedColumn elevators
-      IF requestLocation > currentFloor OF elevator AND < than elevator endingFloor
-        SET listOfElevatorsMovingUp TO FILTER elevators in selectedColumn WITH direction = 1
-        GET currentFloor OF EACH elevator in listOfElevatorsMovingUp
-        SET score OF EACH elevator TO requestLocation - currentFloor OF elevator
-        COMPUTE score OF EACH elevator THEN find lowest THEN ADD TO Scores
-        IF length OF Scores > 1 THEN GET elevator WITH score at first index OF list
-          ENDIF
-        THEN SET targetFloor OF elevator in Scores to requestLocation
+          IF requestLocation > currentFloor OF elevator AND elevator direction = 1
+            ADD elevator TO elevatorsMovingUp
 
-        WHILE targetFloor OF elevator IS NOT currentFloor
-          SET direction = 1
-          SET nextStops = targetFloor
-          SET speed TO transit
-          IF nextStops = currentFloor THEN 
-          CALL OpenDoors USING elevator, currentFloor, nextStops
-          ELSE SET currentFloor = currentFloor + direction
-          CALL ShouldWeStopInTransit USING elevator
-          IF targetFloor OF elevator = currentFloor CALL OpenDoors THEN END LOOP 
-            CALL IdleHandler USING elevator
-            THEN EMPTY Scores
-            ELSE LOOP
+            IF elevatorsMovingUp = EMPTY:
+              SET IdleList TO FILTER elevators in selectedColumn WITH direction = 0
 
-        IF elevatorsMovingUp = empty CALL GetOptimalIdleElevator USING 1, requestLocation
-          ENDIF
-        ENDIF
+              IF IdleList = EMPTY
+                CALL HandleNoIdle USING 1, selectedColumn
+              ELSE CALL GetOptimalIdleElevator USING 1
 
-    ELSE IF requestLocation < currentFloor
-      SET listOfElevatorsMovingDown TO EACH elevator with direction = -1
-      GET currentFloor OF EACH elevator in listOfElevatorsMovingDown
-      SET score OF EACH elevator TO requestLocation - currentFloor
-      COMPUTE score OF EACH elevator THEN find lowest THEN ADD TO Scores
-      IF length OF Scores > 1 THEN GET score at first index OF list
-      ENDIF
-      THEN SET targetFloor OF elevator WITH lowest score to requestLocation
-     
-      WHILE targetFloor OF elevator IS NOT currentFloor
-        SET direction = -1
-        SET nextStops = targetFloor
-        SET speed TO transit
-        IF nextStops = currentFloor THEN 
-        CALL OpenDoors USING elevator, currentFloor, nextStops
-        SET currentFloor = currentFloor - direction
-        CALL ShouldWeStopInTransit USING elevator
-        IF targetFloor OF elevator = currentFloor CALL OpenDoors THEN END LOOP 
-          CALL IdleHandler USING elevator
-          THEN EMPTY Scores
-          ELSE LOOP
+            ELSE CALL HandleUp USING elevatorsMovingUp, requestLocation
 
-      IF elevatorsMovingDown = none CALL GetOptimalIdleElevator USING -1, requestLocation
-        ENDIF
-      END ELSE
+          ELSE IF requestLocation < currentFloor OF elevator AND elevator direction = -1
+            ADD elevator TO elevatorsMovingDown
+
+            IF elevatorsMovingDown = EMPTY:
+              SET IdleList TO FILTER elevators in selectedColumn WITH direction = 0
+
+              IF IdleList = EMPTY
+                CALL HandleNoIdle USING 1, selectedColumn
+              ELSE CALL GetOptimalIdleElevator USING -1
+
+            ELSE CALL HandleDown USING elevatorsMovingDown, requestLocation
+
+ENDSEQUENCE
+
+SEQUENCE HandleUp USING elevatorsMovingUp, requestLocation
+
+  GET currentFloor OF EACH elevator in elevatorsMovingUp
+  SET score OF EACH elevator TO requestLocation - currentFloor OF elevator
+  COMPUTE score OF EACH elevator 
+  SET ScoreList = EMPTY
+  ADD EACH elevator score TO ScoreList
+  THEN find lowest 
+    IF length OF ScoreList > 1 
+      GET score at first index OF ScoreList
+    ENDIF
+
+  THEN SET targetFloor OF elevator WITH lowest score to requestLocation
+
+  WHILE targetFloor OF elevator IS NOT currentFloor
+    SET direction = 1
+    ADD targetFloor TO nextStops
+    SORT nextStops BY ascending order
+    SET speed TO transit
+    FOR EACH stop in nextStops
+      IF stop at current index = currentFloor THEN 
+        CALL OpenDoors USING elevator
+
+      ELSE SET currentFloor = currentFloor + direction
+      CALL ShouldWeStopInTransit USING elevator
+
+      IF targetFloor OF elevator = currentFloor 
+        CALL OpenDoors THEN END LOOP 
+        SET nextStops TO EMPTY
+        SET score OF elevator TO none
+        CALL IdleHandler USING elevator
+      ELSE LOOP
+
+ENDSEQUENCE
+
+SEQUENCE HandleDown USING elevatorsMovingDown, requestLocation
+
+  GET currentFloor OF EACH elevator in elevatorsMovingDown
+  SET score OF EACH elevator TO currentFloor - requestLocation OF elevator
+  COMPUTE score OF EACH elevator 
+  SET ScoreList = EMPTY
+  ADD EACH elevator score TO ScoreList
+  THEN find lowest 
+    IF length OF ScoreList > 1 
+      GET score at first index OF ScoreList
+    ENDIF
+
+  THEN SET targetFloor OF elevator WITH lowest score to requestLocation
+
+  WHILE targetFloor OF elevator IS NOT currentFloor
+    SET direction = -1
+    ADD targetFloor TO nextStops
+    SORT nextStops BY descending order
+    SET speed TO transit
+    FOR EACH stop in nextStops
+      IF stop at current index = currentFloor THEN 
+        CALL OpenDoors USING elevator
+        
+      ELSE SET currentFloor = currentFloor + direction
+      CALL ShouldWeStopInTransit USING elevator
+
+      IF targetFloor OF elevator = currentFloor 
+        CALL OpenDoors THEN END LOOP 
+        SET nextStops TO EMPTY
+        SET score OF elevator TO none
+        CALL IdleHandler USING elevator
+      ELSE LOOP
+
 ENDSEQUENCE
 
 
 SEQUENCE ShouldWeStopInTransit USING elevator
+  CASE elevator direction = 1:
+    GET requestedFloors FROM elevator column
+      FOR EACH requestedFloor in requestedFloors
+        IF requestedFloor > elevator currentFloor
+        SET GoingUpList TO EMPTY
 
-CASE elevator direction = 1:
-  GET requestedFloors
-    FOR EACH floor in requestedFloors
-    IF floor > elevator currentFloor
-    ADD floor TO elevator nextStops
-    REMOVE floor FROM requestedFloors
+          FOR EACH elevator in column elevators
+            IF direction = 1 ADD elevator TO GoingUpList
 
-CASE elevator direction = -1:
-  GET requestedFloors
-    FOR EACH floor in requestedFloors
-    IF floor < elevator currentFloor
-    ADD floor TO elevator nextStops
-    REMOVE floor FROM requestedFloors
+            FOR EACH elevator in GoingUpList
+              SET Score = requestedFloor - currentFloor
+              FIND elevator WITH lowest Score
+
+              IF elevator WITH lowest Score = elevator that called ShouldWeStopInTransit
+                ADD requestedFloor TO nextStops
+
+              ELSE ADD requestedFloor TO nextStops OF elevator WITH lowest score
+
+  CASE elevator direction = -1:
+    GET requestedFloors FROM elevator column
+      FOR EACH requestedFloor in requestedFloors
+        IF requestedFloor < elevator currentFloor
+        SET GoingDownList TO EMPTY
+
+          FOR EACH elevator in column elevators
+            IF direction = -1 ADD elevator TO GoingUpList
+
+            FOR EACH elevator in GoingDownList
+              SET Score = currentFloor - requestedFloor
+              FIND elevator WITH lowest Score
+
+              IF elevator WITH lowest Score = elevator that called ShouldWeStopInTransit
+                ADD requestedFloor TO nextStops
+
+              ELSE ADD requestedFloor TO nextStops OF elevator WITH lowest score
 ENDSEQUENCE
+
+
 
 
 SEQUENCE IdleHandler USING elevator
@@ -310,6 +395,16 @@ SEQUENCE IdleHandler USING elevator
 
     IF direction = 0 CALL elevatorIsRequested USING elevator defaultFloor
     ELSE RETURN
+    ENDSEQUENCE
+ENDSEQUENCE
+
+
+SEQUENCE HandleNoIdle USING "DIRECTION", selectedColumn
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      SET IdleElevatorsList = FILTER elevators, GET ALL WITH direction = "DIRECTION"
+      IF IdleElevatorsList = EMPTY, LOOP UNTIL NOT EMPTY
+      THEN CALL GetOptimalIdleElevator USING "DIRECTION", requestLocation
 ENDSEQUENCE
 
 
@@ -356,8 +451,10 @@ SEQUENCE awaitCall //"sequence that awaits an input on every up and down call bu
     IF inputHasBeenReceived: 
     SET time = START TIMER FROM 0 seconds
     CALL elevatorIsRequested USING requestLocation, time
+    ADD requestLocation TO requestedFloors OF column
     IF elevatorSensor = true THEN 
     SET floor waitTime OF requestLocation TO time
+    REMOVE requestLocation FROM requestedFloors OF column
     THEN STOP TIMER, RESET TIMER
     LOOP UNTIL columnPower = false OR status = false
 ENDSEQUENCE
@@ -366,10 +463,9 @@ ENDSEQUENCE
 SEQUENCE awaitFloorRequest //"sequence that awaits an input on every floor request button in each elevator"
   WHILE columnPower = true:
     FOR EACH column in columns
-      FOR EACH elevator in column
-      SET status = CALL elevatorCheck every 10 seconds
+      FOR EACH elevator in elevators
         FOR EACH floorRequestButton in floorRequestButtons
-        SET inputValue TO EMPTY
+          SET status = CALL elevatorCheck every 10 seconds
            IF inputValue NOT EMPTY: 
               CALL FloorRequestButtonPressed USING elevator, inputValue
               SET inputValue TO EMPTY
@@ -421,13 +517,19 @@ SEQUENCE FloorRequestButtonPressed USING elevator, requestedFloor
   GET elevator currentFloor
   IF currentFloor = requestedFloor CALL OpenDoors
   
-  CASE requestedFloor > nextStops: 
-  SORT nextStops by ascending order
-  ADD requestedFloor TO nextStops
+  CASE requestedFloor > currentFloor:
+    ADD requestedFloor TO nextStops
+    SORT nextStops by ascending order
+    SET targetFloor = requestedFloor
 
-  CASE requestedFloor < nextStops
-  SORT nextStops by ascending order
-  LOOP UNTIL elevator direction = 0 THEN 
-    elevator direction = -1
-    targetFloor = requestedFloor
+  CASE requestedFloor < currentFloor:
+    IF direction = -1
+      SORT nextStops by descending order
+      targetFloor = requestedFloor
+
+    ELSE 
+      LOOP UNTIL elevator direction = 0 THEN 
+      elevator direction = -1
+      targetFloor = requestedFloor
+
 ENDSEQUENCE

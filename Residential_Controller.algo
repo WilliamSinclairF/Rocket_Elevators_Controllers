@@ -10,6 +10,8 @@ SEQUENCE OperateAllSystems
 
   IF elevatorCheck = true
     CALL setInitialElevatorLocations
+    FOR EACH elevator in elevators
+      SET targetFloor TO defaultFloor
     CALL awaitCall
     CALL awaitFloorRequest
       ELSE RETURN 
@@ -72,11 +74,9 @@ SEQUENCE elevatorCheck FOR EACH elevator in elevators
   check elevator moving parts
   check elevator weight sensors
   IF moving parts & weight sensors = true
-      RETURN true
-        ELSE RETURN false & elevatorErrorCode
-        ENDSEQUENCE
+    RETURN true
 
-  IF elevatorCheck of elevator = false
+  ELSE
     SEQUENCE
       alert operator WITH elevatorErrorCode and elevator
       SET status OF elevator TO "disabled"
@@ -97,7 +97,6 @@ SEQUENCE setInitialElevatorLocations
   IF elevators = 1
     SET maxElevatorIdle TO 5 minutes
     SET defaultFloor TO 1
-    SET targetFloor = defaultFloor
   
   ELSE FOR EACH elevator in elevators
     SET maxElevatorIdle TO 5 minutes
