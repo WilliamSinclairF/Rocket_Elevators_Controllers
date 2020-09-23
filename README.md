@@ -1,15 +1,20 @@
 # Rocket Elevators Controllers
 
 ### Table Of Contents:
-englishversions folder: my original attempts at translating the problem at hand into english-ish text
+## englishversions folder: 
+my original attempts at translating the problem at hand into english-ish text
 
-old folder: contains previous pseudocode attempts, will be removed later when I'm sure I wont need it
+## old folder: 
+contains previous pseudocode attempts, will be removed later when I'm sure I wont need it
 
-Residential_Controller.algo: Pseudocode for the residential problem
-Commercial_Controller.algo: Pseudocode for the commercial problem
+## Residential_Controller.algo: 
+Pseudocode for the residential problem
+
+## Commercial_Controller.algo: 
+Pseudocode for the commercial problem
 
 ## Any Requirements?
-The algorithm...
+### The algorithm...
 
 - must be finite and delimited: If it never ends in trying to solve the problem in question, the algorithm is useless.
 - instructions must be clearly defined and each step must be precise. It must cover all cases and must be unambiguous.
