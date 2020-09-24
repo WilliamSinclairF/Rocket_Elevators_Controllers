@@ -100,7 +100,7 @@ SET firstFloor TO length OF basements + 1
       FOR EACH elevator in elevators:
         SET column TO column
         SET defaultFloor TO firstFloor
-        SET StartingFloor TO column StartingFloor
+        SET StartingFloor TO firstFloor + column StartingFloor
         SET EndingFloor TO column EndingFloor
         SET elevatorDisplay TO 1
         SET elevatorDisplayMessage TO none
@@ -108,7 +108,7 @@ SET firstFloor TO length OF basements + 1
         SET targetFloor TO none 
         SET nextStops TO empty 
         SET maxElevatorIdle to 30 seconds
-        SET floorRequestButtons TO EACH number FROM column startingFloor TO column endingFloor
+        SET floorRequestButtons TO firstfloor AND EACH number FROM column startingFloor TO column endingFloor
         SET direction TO empty   //"will be 1 for UP, -1 for DOWN, 0 for IDLE"
         SET speed to empty
         SET score TO empty 
@@ -228,14 +228,9 @@ SEQUENCE elevatorIsRequested USING requestLocation:
   SET elevatorsMovingUp TO EMPTY
   SET elevatorsMovingDown TO EMPTY
 
-
-
   FOR EACH column in columns
-    IF column startingFloor IS = OR > THAN requestLocation AND requestLocation IS < THAN column endingFloor
+    IF column startingFloor >= requestLocation AND requestLocation IS < THAN column endingFloor
       SET selectedColumn TO column
-    
-    ELSE IF requestLocation = firstFloor
-
 
     REPEAT UNTIL selectedColumn IS NOT none
 

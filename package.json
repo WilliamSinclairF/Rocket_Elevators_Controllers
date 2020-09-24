@@ -1,0 +1,31 @@
+{
+  "name": "elevator_controllers",
+  "version": "1.0.0",
+  "description": "### Table Of Contents: ## englishversions folder:  my original attempts at translating the problem at hand into english-ish text",
+  "main": "prototype.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/issues"
+  },
+  "homepage": "https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers#readme",
+  "devDependencies": {
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.1",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "prettier": "^2.1.2"
+  }
+}
