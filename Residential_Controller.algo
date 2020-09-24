@@ -45,7 +45,7 @@ SET PeakTimes TO list: Morning: 7:00-9:00, Evening: 16:00 - 19:00
         SET currentFloor TO none   //"will be a number"
         SET targetFloor TO none   //"will be a number"
         SET nextStop TO empty list //"will be a list of numbers"
-        SET maxElevatorIdle to 5 minutes
+        SET maxElevatorIdle to 10 minutes
         SET floorRequestButtons TO floors
         SET direction TO empty   //"will be 1 for UP, -1 for DOWN, 0 for IDLE"
         SET speed to empty
@@ -108,12 +108,12 @@ ENDSEQUENCE
 SEQUENCE IsItPeakTime USING Date, CurrentTime
   CASE Date = Saturday: 
   FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 5 minutes
+    SET maxElevatorIdle TO 15 minutes
   RETURN false
 
   CASE Date = Sunday: 
   FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 5 minutes
+    SET maxElevatorIdle TO 15 minutes
   RETURN false
 
   IF CurrentTime > 6:30 AND < 9:30
