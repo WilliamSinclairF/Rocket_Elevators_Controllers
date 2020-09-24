@@ -7,7 +7,7 @@ const setGlobalSpecs = (floors, basements, batteries, columns, elevators) => {
     batteries: batteries,
     columns: columns,
     elevatorAmount: elevators,
-    floorsPerColumn: [],
+    columnProperties: [],
     elevatorProperties: [],
   };
   return { buildingSpecs, globalElevatorSpecs };
@@ -17,28 +17,30 @@ const Building = setGlobalSpecs(66, 6, 1, 4, 12);
 
 const assignColumnsToFloors = () => {
   let { floors, basements } = Building.buildingSpecs;
-  let { columns, floorsPerColumn } = Building.globalElevatorSpecs;
-  if (floorsPerColumn.length >= columns) return;
+  let { columns, columnProperties } = Building.globalElevatorSpecs;
+
   for (let i = 0; i < columns; i++) {
-    gap = (floors - basements) / (columns - 1) - 1;
+    let gap = (floors - basements) / (columns - 1) - 1;
     switch (i) {
       case 0:
-        floorsPerColumn.push({ startingFloor: 1, endingFloor: basements + 1 });
+        columnProperties.push({ startingFloor: 1, endingFloor: basements + 1, requestedStops: [] });
         break;
       case 1:
-        startingFloor = floorsPerColumn[i - 1].endingFloor + 1;
+        startingFloor = columnProperties[i - 1].endingFloor + 1;
         endingFloor = startingFloor + gap - 1;
-        floorsPerColumn.push({
+        columnProperties.push({
           startingFloor: startingFloor,
           endingFloor: endingFloor,
+          requestedStops: [],
         });
         break;
       default:
-        startingFloor = floorsPerColumn[i - 1].endingFloor + 1;
+        startingFloor = columnProperties[i - 1].endingFloor + 1;
         endingFloor = startingFloor + gap;
-        floorsPerColumn.push({
+        columnProperties.push({
           startingFloor: startingFloor,
           endingFloor: endingFloor,
+          requestedStops: [],
         });
         break;
     }
@@ -49,26 +51,38 @@ const assignElevatorsToColumns = () => {
   let {
     columns,
     elevatorAmount,
-    floorsPerColumn,
+    columnProperties,
     elevatorProperties,
   } = Building.globalElevatorSpecs;
   ElevPerColumn = elevatorAmount / columns;
-  console.log(elevatorAmount);
-
   for (let i = 0; i <= ElevPerColumn; i++) {
     for (let j = 0; j < ElevPerColumn; j++) {
+      letter = i + 65;
       elevatorProperties.push({
-        Column: [i],
-        ElevatorID: `E${[j]}`,
-        minFloor: floorsPerColumn[i].startingFloor,
-        maxFloor: floorsPerColumn[i].endingFloor,
-        defaultFloor: 1,
+        Column: i,
+        ElevatorID: `${String.fromCharCode(letter)}${i}`,
+        CurrentFloor: 1,
+        MinFloor: columnProperties[i].startingFloor,
+        MaxFloor: columnProperties[i].endingFloor,
+        NextStops: [],
+        DefaultFloor: 1,
+        TargetFloor: 0,
+        Direction: 0,
         Score: 0,
         MaxIdle: 30000,
       });
     }
   }
+  if (!Number.isInteger(ElevPerColumn)) {
+    elevatorProperties.pop();
+  }
 };
 
 assignColumnsToFloors();
 assignElevatorsToColumns();
+
+const ElevatorIsRequested = (ColumnOrigin, RequestLocation) => {
+  let selectedColumn = Building.globalElevatorSpecs.columnProperties[ColumnOrigin];
+  selectedColumn.requestedStops.push(RequestLocation);
+  console.log(selectedColumn);
+};
