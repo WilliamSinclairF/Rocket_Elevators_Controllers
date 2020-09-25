@@ -168,12 +168,12 @@ SEQUENCE ElevatorFinder USING Request
   FILTER Columns, GET Column that MATCHES Column IN Request
     FOR EACH elevator in elevators
       CASE elevator direction = 1
-        IF RequestLocation > elevator currentFloor & elevator direction = requestLocation
+        IF RequestLocation > elevator currentFloor & elevator direction = RequestDirection
         ADD TO ElevatorsGoingUp
       ENDCASE
 
       CASE elevator direction = -1
-        IF RequestLocation < elevator currentFloor & elevator direction = requestLocation
+        IF RequestLocation < elevator currentFloor & elevator direction = RequestDirection
         ADD TO ElevatorsGoingDown
       ENDCASE
 

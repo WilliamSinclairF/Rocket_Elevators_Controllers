@@ -1,15 +1,14 @@
 "GENERAL IDEA:
 
-ELEVATORS:
-Individual elevators are dumb, they don't know which floors are assigned to them
-We counter this by giving each elevator only the buttons that request floors in their range.
-
-
 COLUMNS:
 Columns are the ones handling the decisions, they have a minimum and maximum floor assigned to them.
 When an elevator is requested from a floor, the elevators assigned to respond to the request
 are determined by which column the request was sent from. This will be accomplished by having each
 elevator request button send a Request 'object' that contains the identity of the column and the floor it was sent from.
+
+ELEVATORS:
+Individual elevators are dumb, they don't know which floors are assigned to them
+We counter this by giving each elevator only the buttons that request floors in their range.
 
 
 ELEVATOR REQUESTS:
@@ -85,10 +84,7 @@ SEQUENCE SetBuildingAndElevatorSpecs
     //"using this to figure out how many floors each column should have"
 
     SEQUENCE SetFloorGapBetweenColumns
-      SET gapBetweenFloors = (floors - basements - 1) / (columns - 1)
-      SET gapIsDecimal = false
-      IF gapBetweenFloors IS not an integer
-        SET gapIsDecimal TO true
+      SET gapBetweenFloors = (floors - basements) / (columns - 1)
 
       SET firstFloor = number OF basements + 1
 
@@ -98,16 +94,14 @@ SEQUENCE SetBuildingAndElevatorSpecs
           SET Column EndingFloor = firstFloor
         ENDCASE
 
-        CASE Column is at second index(1):
-          SET Column startingFloor = firstFloor + 1
+        CASE Column is at second index:
+          SET Column startingFloor = firstFloor
           SET endingFloor = firstFloor + gapBetweenFloors
-          IF gapIsDecimal = true
-          SET endingFloor = endingFloor - 1
         ENDCASE
 
         DEFAULT CASE(if all previous cases were not applicable): 
-          SET Column startingFloor = gapBetweenFloors * (index -1)
-          SET Column endingFloor = gapBetweenFloors * index
+          SET Column startingFloor = endingFloor value of previous index
+          SET Column endingFloor = startingFloor + gapBetweenFloors
         ENDCASE
     ENDSEQUENCE
     
@@ -224,10 +218,10 @@ SEQUENCE EvaluateWaitTime USING requestLocation, timer
   WHILE WaitingList NOT EMPTY
 
     FOR EACH value in WaitingList
-      IF value < 30 seconds
+      IF value =< 30 seconds
         REMOVE value
       
-      ELSE IF value < 60 seconds
+      ELSE IF value =< 60 seconds
         GET elevators IN column OF requestLocation
         SET defaultFloor OF first elevator in column TO requestLocation
         SET ALL elevators maxElevatorIdle TO 0
@@ -281,12 +275,12 @@ SEQUENCE ElevatorFinder USING Request
   FIND Column IN Columns USING Column FROM Request
     FOR EACH elevator in elevators
       CASE elevator direction = 1
-        IF RequestLocation > elevator currentFloor & elevator direction = requestLocation
+        IF RequestLocation > elevator currentFloor & elevator direction = RequestDirection
         ADD TO ElevatorsGoingUp
       ENDCASE
 
       CASE elevator direction = -1
-        IF RequestLocation < elevator currentFloor & elevator direction = requestLocation
+        IF RequestLocation < elevator currentFloor & elevator direction = RequestDirection
         ADD TO ElevatorsGoingDown
       ENDCASE
 
