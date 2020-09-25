@@ -1,364 +1,431 @@
-SEQUENCE OperateAllSystems
-  CALL PowerOnSequence
-  IF columnPower = true 
-    CALL systemCheck
-      ELSE RETURN 
+"Putting AllSystemsGo on top for clarity but this would have to be moved down to actually work with the code
+(a few other sequences are in the same boat)"
 
-  IF systemCheck = true 
-    CALL elevatorCheck
-      ELSE RETURN 
-
-  IF elevatorCheck = true
+-------------------------------------------------------------------------------------------
+// "run this to get going!"
+SEQUENCE AllSystemsGo
+  CALL SetBuildingAndElevatorSpecs
+  IF SystemStatus = active
+    CALL SetVariables
     CALL setInitialElevatorLocations
-    FOR EACH elevator in elevators
-      SET targetFloor TO defaultFloor
-    CALL awaitCall
-    CALL awaitFloorRequest
-      ELSE RETURN 
+    CALL ListenForElevatorCalls
+    CALL ListenForFloorInput
+
+  ELSE RETURN
 ENDSEQUENCE
 
+// "sequences that set up initial values"
+SEQUENCE SetBuildingAndElevatorSpecs 
+  SET SystemStatus TO idle
+  DISPLAY form with number inputs:
+    Floors:
+    Basements:
+    Columns:
+    Elevators:
 
-SEQUENCE PowerOnSequence:
-SET columnPower TO false
-await operator input
-IF operator input: columnPower = true
-REPEAT UNTIL columnPower = true
-
-SET Building:
-SET floors TO OperatorInput        //"will be a number"
-SET basements TO OperatorInput    //"will be a number"
-SET columns TO OperatorInput
-SET PeakTimes TO list: Morning: 7:00-9:00, Evening: 16:00 - 19:00
-
-  FOR EACH floors in Building:
-    SET waitTime TO 0
-    SET upCallButtons TO 1
-    SET downCallButtons TO 1
-
-    FOR EACH column in columns
-      SET elevators TO OperatorInput   //"will be a number"
-      SET systemStatus TO disabled    //"will be a string"
-      SET requestedFloors TO empty list  //"will be a list of numbers"
-
-      FOR EACH elevator in columns:
-        SET defaultFloor to none
-        SET currentFloor TO none   //"will be a number"
-        SET targetFloor TO none   //"will be a number"
-        SET nextStop TO empty list //"will be a list of numbers"
-        SET maxElevatorIdle to 10 minutes
-        SET floorRequestButtons TO floors
-        SET direction TO empty   //"will be 1 for UP, -1 for DOWN, 0 for IDLE"
-        SET speed to empty
-        SET score TO empty    //"will be a number"
-        SET status TO disabled 
-        SET elevatorErrorCode TO none   //"will be a string"
+REPEAT UNTIL form is filled
 ENDSEQUENCE
 
+//"after receiving previous inputs, we can now run this to set up the rest of the variables and to activate the system"
+SEQUENCE SetVariables
+SET Building TO All FROM Form
 
-SEQUENCE systemCheck
-  check doors
-  check buttons
-  check motors
-  IF doors & buttons & motors = true
-    RETURN true
-  ELSE RETURN false & systemErrorCode
-    IF systemCheck = false
-      SEQUENCE
-        alert operator WITH systemErrorCode
-        columnPower = false
-      ENDSEQUENCE
+ADD TO Building:
+
+FOR EACH floor in floors
+  SET UpButton TO 1
+  SET DownButton TO 1
+  FOR EACH UpButton & DownButton:
+    SET Request:
+      RequestLocation: floor
+
+      FOR EACH elevator in elevators:
+        SET column TO currentColumn
+        SET FloorRequestButtons TO EACH number FROM 1 TO floors
+          SET currentFloor TO none
+          SET Score TO none
+          SET nextStopsUp TO empty 
+          SET nextStopsDown TO empty 
+          SET direction TO 0   //"will be 1 for UP, -1 for DOWN, 0 for IDLE"
+          SET defaultFloor TO 1
+          SET maxIdleTime TO 1
+
+SET SystemStatus TO active
 ENDSEQUENCE
 
-
-SEQUENCE elevatorCheck FOR EACH elevator in elevators
-  check elevator moving parts
-  check elevator weight sensors
-  IF moving parts & weight sensors = true
-    RETURN true
-
-  ELSE
-    SEQUENCE
-      alert operator WITH elevatorErrorCode and elevator
-      SET status OF elevator TO "disabled"
-      ELSE SET status OF elevator TO "active"
-    ENDSEQUENCE
-ENDSEQUENCE
- 
-
+//"this sequence is used to figure out where each elevator should sit"
 SEQUENCE setInitialElevatorLocations
   GET CurrentTime
   GET Date
 
   CALL IsItPeakTime USING Date, CurrentTime
-  IF IsItPeakTime = TRUE RETURN
+
+  IF IsItPeakTime = TRUE 
+  RETURN
 
   ELSE
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      IF elevator is at first index
+      SET defaultFloor TO 1
 
-  IF elevators = 1
-    SET maxElevatorIdle TO 5 minutes
-    SET defaultFloor TO 1
-  
-  ELSE FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 5 minutes
-    SET defaultFloor OF elevator at first index in elevators TO floor 1
-    SET defaultFloor OF all other elevators TO index of elevator + (floors / length OF elevators)
+      ELSE 
+        SET defaultFloor TO 1 + (floors / elevators)
 ENDSEQUENCE
 
-
+//"logic for handling peak times/off times"
 SEQUENCE IsItPeakTime USING Date, CurrentTime
   CASE Date = Saturday: 
-  FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 15 minutes
-  RETURN false
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      SET maxElevatorIdle TO 5 minutes
+    RETURN false
 
   CASE Date = Sunday: 
-  FOR EACH elevator in elevators
-    SET maxElevatorIdle TO 15 minutes
-  RETURN false
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+      SET maxElevatorIdle TO 5 minutes
+    RETURN false
 
-  IF CurrentTime > 6:30 AND < 9:30
-    FOR EACH elevator in elevators:
-      SET maxElevatorIdle TO 1 minute
-      IF elevators = 1
-      SET defaultFloor TO floors / 2
-      SET targetFloor = defaultFloor
-    
-    ELSE SET defaultFloor OF elevator at first index in elevators TO floor 1
-      SET defaultFloor OF all other elevators TO index of elevator + (floors / (length OF elevators / 2))
+  IF CurrentTime > 06:30 AND < 09:30
+    FOR EACH column in columns
+      FOR EACH elevator in elevators:
+        SET maxElevatorIdle TO 0
   ENDIF
 
   ELSE IF CurrentTime > 15:30 AND < 20:30
-    FOR EACH elevator in elevators:
-      SET maxElevatorIdle TO 1 minute
-      SET defaultFloor TO 1
-      SET targetFloor = defaultFloor
-  ENDIF
+
+  FOR EACH column in columns
+    FOR EACH elevator in elevators
+        SET defaultFloor TO 1
+   
   RETURN TRUE
 ENDSEQUENCE
 
+// "logic to handle unexpected peaks"
+SEQUENCE EvaluateWaitTime USING requestLocation, timer
 
+  SET WaitingList = EMPTY
+  ADD requestLocation, timer TO WaitingList
 
-SEQUENCE SetRush USING requestLocation
-RushList = EMPTY
+  WHILE WaitingList NOT EMPTY
 
-FOR EACH floor in building
-  GET waitTime IF > 15 seconds
-  ADD floor, waitTime TO RushList
-
-WHILE RushList NOT EMPTY
-  FOR EACH elevator in elevators
-    SET defaultFloor to floor WITH highest value IN RushList
-    IF RushList = EMPTY
-    END LOOP
-    CALL setInitialElevatorLocations
-ENDSEQUENCE
-
-
-SEQUENCE elevatorIsRequested USING requestLocation:
-SET Scores = empty
-
-  FOR EACH elevator in elevators:
-    CALL elevatorCheck
-    GET currentFloor OF elevator
-    IF currentFloor = requestLocation
-    CALL OpenDoors
-      ENDIF
+    FOR EACH value in WaitingList
+      IF value < 30 seconds
+        REMOVE value
       
-    IF requestLocation > currentFloor
-      SET listOfElevatorsMovingUp TO EACH elevator with direction = 1
-      GET currentFloor OF EACH elevator in listOfElevatorsMovingUp
-      SET score OF EACH elevator TO requestLocation - currentFloor
-      COMPUTE score OF EACH elevator THEN find lowest THEN ADD TO Scores
-      IF length OF Scores > 1 THEN GET score at first index OF list
-        ENDIF
-      THEN SET targetFloor OF elevator WITH lowest score to requestLocation
+      ELSE IF value < 60 seconds
+        GET elevators IN column OF requestLocation
+        SET defaultFloor OF first elevator in column TO requestLocation
+        SET ALL elevators maxElevatorIdle TO 0
 
-      WHILE targetFloor OF elevator IS NOT currentFloor
-        SET direction = 1
-        SET nextStop = targetFloor
-        SET speed TO transit
-        IF nextStop = currentFloor THEN 
-        CALL OpenDoors USING elevator, currentFloor, nextStop
-        SET currentFloor = currentFloor + direction
-        CALL ShouldWeStopInTransit USING elevator
-        IF targetFloor OF elevator = currentFloor CALL OpenDoors THEN END LOOP 
-          CALL IdleHandler USING elevator
-          THEN EMPTY Scores
-          ELSE LOOP
-
-      IF elevatorsMovingUp = none CALL GetOptimalIdleElevator USING 1, requestLocation
-        ENDIF
-      ENDIF
-
-    ELSE IF requestLocation < currentFloor
-      SET listOfElevatorsMovingDown TO EACH elevator with direction = -1
-      GET currentFloor OF EACH elevator in listOfElevatorsMovingDown
-      SET score OF EACH elevator TO requestLocation - currentFloor
-      COMPUTE score OF EACH elevator THEN find lowest THEN ADD TO Scores
-      IF length OF Scores > 1 THEN GET score at first index OF list
-      ENDIF
-      THEN SET targetFloor OF elevator WITH lowest score to requestLocation
-     
-      WHILE targetFloor OF elevator IS NOT currentFloor
-        SET direction = -1
-        SET nextStop = targetFloor
-        SET speed TO transit
-        IF nextStop = currentFloor THEN 
-        CALL OpenDoors USING elevator, currentFloor, nextStop
-        SET currentFloor = currentFloor - direction
-        CALL ShouldWeStopInTransit USING elevator
-        IF targetFloor OF elevator = currentFloor CALL OpenDoors THEN END LOOP 
-          CALL IdleHandler USING elevator
-          THEN EMPTY Scores
-          ELSE LOOP
-
-      IF elevatorsMovingDown = none CALL GetOptimalIdleElevator USING -1, requestLocation
-        ENDIF
-      END ELSE
+      ELSE IF value > 60 seconds
+        GET elevators IN column OF requestLocation
+        SET ALL elevators in column TO defaultFloor = requestLocation
+        SET ALL elevator maxElevatorIdle TO 0
 ENDSEQUENCE
 
 
-SEQUENCE ShouldWeStopInTransit USING elevator
-
-CASE elevator direction = 1:
-  GET requestedFloors
-    FOR EACH floor in requestedFloors
-    IF floor > elevator currentFloor
-    ADD floor TO elevator nextStop
-    REMOVE floor FROM requestedFloors
-
-CASE elevator direction = -1:
-  GET requestedFloors
-    FOR EACH floor in requestedFloors
-    IF floor < elevator currentFloor
-    ADD floor TO elevator nextStop
-    REMOVE floor FROM requestedFloors
-ENDSEQUENCE
-
-
-SEQUENCE IdleHandler USING elevator
+//"handles requests from the up/down floor buttons"
+SEQUENCE HandleElevatorRequest USING Request
   CALL IsItPeakTime
-  SET elevator status TO idle
-  SET elevator direction TO 0
-  WHILE elevator direction = 0
-    SET timer TO maxElevatorIdle
-    LOOP UNTIL direction NOT 0 OR timer = 0
 
-    IF direction = 0 CALL elevatorIsRequested USING elevator defaultFloor
-    ELSE RETURN
+  GET Column, RequestLocation, RequestDirection FROM Request 
+
+  FIND Column IN Columns USING Column FROM Request
+    FOR EACH elevator in elevators
+      IF elevator currentFloor = RequestLocation AND elevator direction = 0 OR RequestDirection
+      CALL OpenDoors
+      RETURN
+    ENDFOR
+
+//"we do this part if we haven't exited the sequence after the previous loop"
+  CALL ElevatorFinder USING Request
+  GET ElevatorsGoingUp, ElevatorsGoingDown, IdleElevators FROM ElevatorFinder
+
+  CASE ElevatorsGoingUp > 0 
+    CALL UpHandler USING RequestLocation, ElevatorsGoingUp
+  ENDCASE
+
+  CASE ElevatorsGoingDown > 0 
+    CALL DownHandler USING RequestLocation, ElevatorsGoingDown
+  ENDCASE
+
+  CASE ElevatorsGoingUp & ElevatorsGoingDown = EMPTY
+    CALL IdleHandler USING IdleElevators, RequestLocation
+  ENDCASE
+
 ENDSEQUENCE
 
+//"this is called by HandleElevatorRequest and returns a list of possible elevators, based on the request location and direction"
+SEQUENCE ElevatorFinder USING Request
+  SET ElevatorsGoingUp TO EMPTY
+  SET ElevatorsGoingDown TO EMPTY
+  SET IdleElevators TO EMPTY
 
-SEQUENCE GetOptimalIdleElevator USING "DIRECTION", requestLocation
-  SET idleElevators TO EMPTY list
+  GET RequestLocation, RequestDirection, Column FROM Request
 
-    CASE "DIRECTION" = 1:
-      FOR EACH elevator in elevators:
-        ADD elevator TO idleElevators IF direction = 0
+  FILTER Columns, GET Column that MATCHES Column IN Request
+    FOR EACH elevator in elevators
+      CASE elevator direction = 1
+        IF RequestLocation > elevator currentFloor & elevator direction = requestLocation
+        ADD TO ElevatorsGoingUp
+      ENDCASE
 
-        FOR EACH elevator in idleElevators
-          GET currentFloor
-          SET score = COMPUTE requestLocation - currentFloor
+      CASE elevator direction = -1
+        IF RequestLocation < elevator currentFloor & elevator direction = requestLocation
+        ADD TO ElevatorsGoingDown
+      ENDCASE
 
-        GET elevator WITH lowest score
-        SET direction TO 1
-        SET idleElevators TO EMPTY list
-        CALL elevatorIsRequested USING requestLocation
+      CASE elevator direction = 0
+        ADD TO IdleElevators
+      ENDCASE
+      ENDFOR
 
-
-    CASE "DIRECTION" = -1:
-        FOR EACH elevator in elevators:
-          ADD elevator TO idleElevators IF direction = 0
-
-        FOR EACH elevator in idleElevators
-          GET currentFloor
-          SET score = COMPUTE requestLocation - currentFloor
-
-        GET elevator WITH lowest score
-        SET direction TO -1
-        SET idleElevators TO EMPTY list
-        CALL elevatorIsRequested USING requestLocation
+  RETURN ElevatorsGoingUp, ElevatorsGoingDown, IdleElevators
 ENDSEQUENCE
 
-
-SEQUENCE awaitCall //"sequence that awaits an input on every up and down call button in building"
-  WHILE columnPower = true:
-  CALL systemCheck every 30 seconds
-  FOR EACH upCallButtons AND downCallButtons:
-    IF inputHasBeenReceived: 
-    SET time = START TIMER FROM 0 seconds
-    CALL elevatorIsRequested USING requestLocation, time
-    IF elevatorSensor = true THEN 
-    SET floor waitTime OF requestLocation TO time
-    THEN STOP TIMER, RESET TIMER
-    LOOP UNTIL columnPower = false OR status = false
+// "logic that goes through elevators that are moving in the up direction to find the nearest one"
+SEQUENCE UpHandler USING RequestLocation, ElevatorsGoingUp
+  SET Score OF EACH elevator in ElevatorsGoingUp TO:
+    RequestLocation - currentFloor OF elevator
+    
+  THEN FIND elevator WITH lowest Score
+    ADD RequestLocation TO elevator nextStopsUp
+    SORT nextStopsUp OF elevator BY ascending order
+    CALL TransitHandler USING elevator
 ENDSEQUENCE
 
+//"same as above but for down"
+SEQUENCE DownHandler USING RequestLocation, ElevatorsGoingDown
+SET Score OF EACH elevator in ElevatorsGoingUp TO:
+  currentFloor OF elevator - RequestLocation
 
-SEQUENCE awaitFloorRequest //"sequence that awaits an input on every floor request button in each elevator"
-  WHILE columnPower = true:
-    FOR EACH column in columns
-      FOR EACH elevator in column
-      SET status = CALL elevatorCheck every 10 seconds
-        FOR EACH floorRequestButton in floorRequestButtons
-        SET inputValue TO EMPTY
-           IF inputValue NOT EMPTY: 
-              CALL FloorRequestButtonPressed USING elevator, inputValue
-              SET inputValue TO EMPTY
-              LOOP UNTIL columnPower = false OR status = false
+  THEN FIND elevator WITH lowest Score
+    ADD RequestLocation TO elevator nextStopsDown
+    SORT nextStopsDown OF elevator BY descending order
+    CALL TransitHandler USING elevator
 ENDSEQUENCE
 
+//"if all elevators are idle, this will run"
+SEQUENCE IdleHandler USING IdleElevators, RequestLocation
 
+  SET IdleUp TO EMPTY
+  SET IdleDown TO EMPTY
+  SET IdleUpWinner TO none
+  SET IdleDownWinner TO none
+
+  FOR EACH elevator in IdleElevators
+    IF RequestLocation > currentFloor 
+      ADD elevator TO IdleUp
+    ELSE ADD elevator TO IdleDown
+  ENDFOR
+
+  IF IdleUp > 0 
+    GET elevators FROM IdleUp
+    FOR EACH elevator in elevators
+      SET Score OF EACH elevator in IdleUp TO:
+        RequestLocation - currentFloor OF elevator
+        ENDFOR
+    THEN FIND elevator WITH lowest Score
+    SET IdleUpWinner TO elevator
+
+  IF IdleDown > 0
+    GET elevators FROM IdleDown
+    FOR EACH elevator in elevators
+      SET Score OF EACH elevator in ElevatorsGoingUp TO:
+        currentFloor OF elevator - RequestLocation
+        ENDFOR
+    THEN FIND elevator WITH lowest Score
+    SET IdleDownWinner TO elevator
+
+  CALL CompareWinners USING IdleUpWinner, IdleDownWinner
+ENDSEQUENCE
+
+//"this will compare idle elevators and will figure out if it's better to get an elevator from above or below the request location"
+SEQUENCE CompareWinners USING IdleUpWinner, IdleDownWinner
+  CASE IdleUpWinner & IdleDownWinner NOT none:
+  COMPARE IdleUpWinner & IdleDownWinner
+  FIND lowest
+  IF IdleUpWinner
+    GET elevator from IdleDownWinner
+    SET elevator direction TO 1
+    ADD RequestLocation TO elevator nextStopsUp
+    CALL TransitHandler USING elevator
+
+  ELSE 
+    GET elevator from IdleDownWinner
+    SET elevator direction TO -1
+    ADD RequestLocation TO elevator nextStopsDown
+    CALL TransitHandler USING elevator
+    RETURN
+
+  CASE IdleUpWinner NOT none:
+    GET elevator from IdleUpWinner
+    SET elevator direction TO 1
+    ADD RequestLocation TO elevator nextStopsUp
+    CALL TransitHandler USING elevator
+  RETURN
+
+  CASE IdleDownWinner NOT none:
+    GET elevator from IdleDownWinner
+    SET elevator direction TO -1
+    ADD RequestLocation TO elevator nextStopsDown
+    CALL TransitHandler USING elevator
+  RETURN
+ENDSEQUENCE
+
+//"handles requests from buttons inside each elevator and contains logic for what should happen if the floor requested is lower than the current floor of the elevator
+and the elevator still has higher floors to go through"
+SEQUENCE HandleFloorRequest USING elevator, Request
+  GET RequestedFloor FROM Request
+
+  CASE RequestedFloor > elevator currentFloor:
+    ADD RequestedFloor TO elevator nextStopsUp
+    SORT nextStopsUp BY ascending order
+    CALL TransitHandler USING elevator
+  ENDCASE
+
+  CASE RequestedFloor < elevator currentFloor:
+      ADD RequestedFloor TO nextStopsDown
+      SORT nextStopsDown BY descending order
+      CALL TransitHandler USING elevator
+  ENDCASE
+
+  CASE RequestedFloor = elevator currentFloor:
+    CALL OpenDoors USING elevator
+  ENDCASE
+ENDSEQUENCE
+
+//"this is ran by elevators every time they move to figure out if the floor they are at should be serviced or if they should switch directions"
+SEQUENCE TransitHandler USING elevator
+  GET direction, nextStopsUp, nextStopsDown FROM elevator
+  SET lastStop = none
+
+  CASE direction = 1:
+    SET lastStop = last value from nextStopsUp
+    WHILE lastStop is not currentFloor:
+      IF currentFloor = first value IN nextStopsUp
+        CALL OpenDoors USING elevator
+        REMOVE value FROM nextStopsUp
+      ELSE SET currentFloor = currentFloor + 1
+      REPEAT LOOP UNTIL nextStopsUp = EMPTY
+      IF nextStopsDown NOT EMPTY
+        SET direction = -1
+        CALL TransitHandler USING elevator
+
+      ELSE direction = 0
+        CALL MakeMeIdle USING elevator
+
+  CASE direction = -1
+    SET lastStop = last value from nextStopsDown
+    WHILE lastStop is not currentFloor:
+      IF currentFloor = first value IN nextStopsDown
+        CALL OpenDoors USING elevator
+        REMOVE value FROM nextStopsUp
+      ELSE SET currentFloor = currentFloor - 1
+      REPEAT LOOP UNTIL nextStopsDown = EMPTY
+      IF nextStopsUp NOT EMPTY
+        SET direction = 1
+        CALL TransitHandler USING elevator
+
+      ELSE direction = 0
+        CALL MakeMeIdle USING elevator
+
+ENDSEQUENCE
+
+//"every elevator needs rest and if they run out of tasks, this will help them relax"
+SEQUENCE MakeMeIdle USING elevator
+  GET maxIdleTime, direction, currentFloor FROM elevator
+
+  SET countdown using maxIdleTime
+
+  IF countdown = 0 OR direction NOT 0
+    RETURN
+
+  ELSE IF countdown = 0 & direction = 0
+    IF currentFloor < defaultFloor
+      direction = 1
+      ADD defaultFloor TO nextStopsUp
+      CALL TransitHandler USING elevator
+
+    ELSE direction = -1
+      ADD defaultFloor TO nextStopsDown
+      CALL TransitHandler USING elevator
+ENDSEQUENCE
+
+//"opens doors and makes sure not to hurt anyone when leaving"
 SEQUENCE OpenDoors USING elevator
-  SET previousDirection TO elevator direction
-  SET elevator direction TO 0
-  SET timer to 6 seconds
-  SET timer = timer - 1 second every 1 second
-  WHILE timer IS NOT 0 seconds
-    CALL DoorSecurity USING elevator currentFloor
-    CALL WeightSensors USING elevator
-    IF DoorSecurity = false
-      SET timer = timer + 1 second
+  GET direction FROM elevator
 
-      IF WeightSensors = false
-        SET timer = infinity
-        CALL WeightSensors every second
-        RETURN IF WeightSensors = true
+  SET previousDirection = direction
+  SET direction = 0
+  OPEN DOORS
 
-    ELSE LOOP UNTIL timer = 0
+  SET 7 seconds timer
+    REMOVE 1 second every second
+
+  WHILE timer > 0
+    CALL DoorSensor USING elevator doorSensor
+    CALL WeightSensor USING elevator weightSensor
+    IF DoorSensor = false
+      timer = timer + 1 second
+
+    ELSE IF WeightSensor = false
+      timer = infinity
+      WHILE timer = infinity
+        CALL WeightSensor
+        REPEAT UNTIL WeightSensor = true
+
+    ELSE CLOSE DOORS
+      SET direction = previousDirection
+      PLAY VOICE MESSAGE:
+        IF direction = 1
+          "GOING UP"
+        ELSE "GOING DOWN"
+
 ENDSEQUENCE
 
+//"runs until the system gets shut down to handle inputs from outside elevators"
+SEQUENCE ListenForElevatorCalls
+  WHILE SystemStatus = active
+    FOR EACH floor in floors
+      FOR EACH UpButton in floor
+        FOR EACH DownButton in floor
+          CALL ListenForInput
+          IF ListenForInput SENDS Request
+            START timer, INCREMENT BY 1 second every second
+            CALL HandleElevatorRequest USING Request
+            IF sensor detects elevator STOP timer
+              CALL EvaluateWaitTime USING Request, timer
+              RESET timer
+            IF timer > 3 minutes ALERT OPERATOR
+            
+ENDSEQUENCE
 
-SEQUENCE DoorSecurity
-  SET ObjectDetected TO false
-  CALL doorSensors OF elevator currentFloor
-    IF ObjectDetected = true
+//"runs until the system gets shut down to handle inputs from inside elevators"
+SEQUENCE ListenForFloorInput
+  WHILE SystemStatus = active
+    FOR EACH elevator in elevators
+      FOR EACH FloorRequestButton in FloorRequestButtons
+          CALL ListenForInput
+          IF ListenForInput SENDS Request
+            CALL HandleFloorRequest USING Request, elevator
+ENDSEQUENCE
+
+//"a highly advanced motion detector that checks for movement in the door area"
+SEQUENCE DoorSensor
+  IF motionIsDetected
     RETURN false
+
+  RETURN true
 ENDSEQUENCE
 
-
-SEQUENCE WeightSensors
-  SET maximumWeight TO 2500 pounds
-  CALL weightSensor OF elevator
-    IF weightSensor > 2500 RETURN false
-    WHILE weightSensor > 2500
-    CALL alert operator
-    LOOP UNTIL weightSensor < 2500
-ENDSEQUENCE
-
-
-"when a target floor is picked with floor request buttons:"
-SEQUENCE FloorRequestButtonPressed USING elevator, requestedFloor
-  GET elevator currentFloor
-  IF currentFloor = requestedFloor CALL OpenDoors
+//"an advanced weight sensor"
+SEQUENCE WeightSensor
+  IF elevatorLoadWeight > 2500
+    RETURN false
+    ALERT OPERATOR
   
-  CASE requestedFloor > nextStop: 
-  SORT nextStop by ascending order
-  ADD requestedFloor TO nextStop
-
-  CASE requestedFloor < nextStop
-  SORT nextStop by ascending order
-  LOOP UNTIL elevator direction = 0 THEN 
-    elevator direction = -1
-    targetFloor = requestedFloor
+  ELSE RETURN true
 ENDSEQUENCE
