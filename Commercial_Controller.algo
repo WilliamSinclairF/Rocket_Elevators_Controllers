@@ -1,61 +1,3 @@
-"GENERAL IDEA:
-
-COLUMNS:
-Columns are the ones handling the decisions, they have a minimum and maximum floor assigned to them.
-When an elevator is requested from a floor, the elevators assigned to respond to the request
-are determined by which column the request was sent from. This will be accomplished by having each
-elevator request button send a Request 'object' that contains the identity of the column and the floor it was sent from.
-
-ELEVATORS:
-Individual elevators are dumb, they don't know which floors are assigned to them
-We counter this by giving each elevator only the buttons that request floors in their range.
-
-
-ELEVATOR REQUESTS:
-When the HandleElevatorRequests sequence runs, it will give first priority to elevators that are already in transit.
-If no elevators are in transit, the IdleHandler sequence will take over and figure which idle elevator should be sent out.
-While elevators are moving, they call TransitHandler to help them figure what to do next.
-
-
-TRANSIT:
-TransitHandler is called recursively if a floor from the opposite direction is requested while the elevator is moving.
-If the elevator is currently moving, the elevator will go through all calls assigned to it in it's current direction first and then,
-the elevator will change it's direction, call TransitHandler again with it's new direction and repeat the same process in reverse.
-
-
-IDLE:
-If the elevator doesn't have any other stops after going through all the up/down stops in it's queue, it will set itself to idle using MakeMeIdle
-That sequence sets a timer and waits for the timer to end or the elevator direction to change and if the timer runs out before the elevator receives a new
-request, it will send the elevator to its default floor.
-The sequence will end if the elevator receives a request before the timer ends.
-
-
-TIME MANAGEMENT:
-The system calls the IsItPeakTime sequence every 5 minutes while it's active to try to be proactive so that if a peak usage period happens, 
-it will be ready before it has to take additional measures.
-IsItPeakTime checks whether it's the weekend and if it is, it gives elevators a much longer idle time. 
-If its morning and a week day, it'll have all elevators on ground floor with no idle time.
-If it's time to leave work and also a week day, it will leave half of elevators on ground floor to maintain some service there but the 
-other elevators in the column will have a default floor assigned to them based on the minimum and maximum floors of their given column.
-
-
-MONITORING:
-From the moment an elevator is requested, a timer begins and it ends when the elevator arrives. Elevator buttons are also dumb so all they do is 
-call EvaluateWaitTime with their location and timer every time the elevator arrives. They do however also notify the 'Operator' if their timer 
-gets past 3 minutes to have a human investigate potential problems.
-
-
-DYNAMIC FLOOR ASSIGNMENT:
-Based on the monitoring of the EvaluateWaitTime sequence, certain floors can be deemed to be 'hot'. If that happens,
-the default floor of the elevators assigned to those floors will be set to the 'hot' floor. At first, only one elevator will be assigned but if the 
-wait goes over a minute, all elevators handling the column will join in.
-"
--------------------------------------------------------------------------------------------
-
-"Putting AllSystemsGo on top for clarity but this would have to be moved down to actually work with the code
-(a few other sequences are in the same boat)"
-
--------------------------------------------------------------------------------------------
 // "run this to get going!"
 SEQUENCE AllSystemsGo
   CALL SetBuildingAndElevatorSpecs
@@ -117,13 +59,19 @@ ADD TO Building:
 
 FOR EACH floor in floors
   SET UpButton TO 1
+  IF floor + 1 > Column endingFloor
+    SET UpButton TO 0
   SET DownButton TO 1
+    IF floor = 1
+      SET DownButton TO 0 
+
   SET Request:
     RequestLocation: floor,
     Column: 
       FOR EACH column in columns
         IF column startingFloor AND column endingFloor INCLUDES floor
         SET Column = column
+
 
 SET firstFloor TO length OF basements + 1
 
@@ -136,6 +84,7 @@ SET firstFloor TO length OF basements + 1
         //"assigning the same amount of elevators to each column"
         SET elevators TO total amount OF elevators / total amount OF columns
         IF result IS decimal number
+        ROUND result UP
         REMOVE 1 elevator FROM last Column
       ENDSEQUENCE
 
@@ -218,7 +167,7 @@ SEQUENCE EvaluateWaitTime USING requestLocation, timer
   WHILE WaitingList NOT EMPTY
 
     FOR EACH value in WaitingList
-      IF value =< 30 seconds
+      IF value < 30 seconds
         REMOVE value
       
       ELSE IF value =< 60 seconds

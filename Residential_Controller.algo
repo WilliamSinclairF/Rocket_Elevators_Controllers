@@ -34,7 +34,12 @@ ADD TO Building:
 
 FOR EACH floor in floors
   SET UpButton TO 1
+  IF floor + 1 > floors
+    SET UpButton TO 0
   SET DownButton TO 1
+    IF floor = 1 
+      SET DownButton TO 0
+
   FOR EACH UpButton & DownButton:
     SET Request:
       RequestLocation: floor
