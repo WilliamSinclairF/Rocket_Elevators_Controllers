@@ -1,11 +1,10 @@
 import functools
 
+
 class Building():
     def __init__(self, floors, basements):
         self.floors = floors
         self.basements = basements
-#
-#
 
 
 class Controller():
@@ -198,65 +197,62 @@ class Elevator():
         self.upQueue.sort()
         self.downQueue.sort(reverse=True)
 
-        #
-        #
 
-
-rez = Controller(Building(10, 0), 2)
+Residential = Controller(Building(10, 0), 2)
 
 
 def first_scenario():
     print("""Hello dear customer, we are now starting scenario 1""")
     # Elevator A is Idle at floor 2
-    rez.elevatorList[0].currentFloor = 2
-    rez.elevatorList[0].direction = 0
+    Residential.elevatorList[0].currentFloor = 2
+    Residential.elevatorList[0].direction = 0
     # Elevator B is Idle at floor 6
-    rez.elevatorList[1].currentFloor = 6
-    rez.elevatorList[1].direction = 0
+    Residential.elevatorList[1].currentFloor = 6
+    Residential.elevatorList[1].direction = 0
     # Someone is on floor 3 and wants to go to the 7th floor.
     # Elevator A is expected to be sent.
-    rez.requestElevator(3, 1).requestFloor(7)
+    Residential.requestElevator(3, 1).requestFloor(7)
     print("""Scenario over""")
 
 
 def second_scenario():
     print("""Hello dear customer, we are now starting scenario 2""")
     # Elevator A is Idle at floor 10
-    rez.elevatorList[0].currentFloor = 10
-    rez.elevatorList[0].direction = 0
+    Residential.elevatorList[0].currentFloor = 10
+    Residential.elevatorList[0].direction = 0
     # Elevator B is idle at floor 3
-    rez.elevatorList[1].currentFloor = 3
-    rez.elevatorList[1].direction = 0
+    Residential.elevatorList[1].currentFloor = 3
+    Residential.elevatorList[1].direction = 0
     # Someone is on the 1st floor and requests the 6th floor.
     # Elevator B should be sent.
-    rez.requestElevator(1, 1).requestFloor(6)
+    Residential.requestElevator(1, 1).requestFloor(6)
     # 2 minuteslater, someone else is on the 3rd floor and requeststhe5thfloor.
     # Elevator B should be sent.
-    rez.requestElevator(3, 1).requestFloor(5)
+    Residential.requestElevator(3, 1).requestFloor(5)
     # Finally, a third person is at floor 9 and wants to go down to the 2nd floor.
     # Elevator A should be sent.
-    rez.requestElevator(9, -1).requestFloor(2)
+    Residential.requestElevator(9, -1).requestFloor(2)
     print("""Scenario over""")
 
 
 def third_scenario():
     print("""Hello dear customer, we are now starting scenario 3""")
     # Elevator A is Idle at floor 10
-    rez.elevatorList[0].currentFloor = 10
-    rez.elevatorList[0].direction = 0
+    Residential.elevatorList[0].currentFloor = 10
+    Residential.elevatorList[0].direction = 0
     # Elevator B is Moving from floor 3 to floor 6
-    rez.elevatorList[1].currentFloor = 3
-    rez.elevatorList[1].direction = 1
-    rez.elevatorList[1].upQueue = [6]
+    Residential.elevatorList[1].currentFloor = 3
+    Residential.elevatorList[1].direction = 1
+    Residential.elevatorList[1].upQueue = [6]
     # Someone is on floor 3 and requests the 2nd floor.
     # Elevator A should be sent.
-    rez.requestElevator(3, -1).requestFloor(2)
+    Residential.requestElevator(3, -1).requestFloor(2)
     # 5 minutes later, someone else is on the 10th floor and wants to go to the 3rd.
     # Elevator B should be sent.
-    rez.elevatorList[1].currentFloor = 6
-    rez.elevatorList[1].direction = 0
-    rez.elevatorList[1].upQueue = []
-    rez.requestElevator(10, -1).requestFloor(3)
+    Residential.elevatorList[1].currentFloor = 6
+    Residential.elevatorList[1].direction = 0
+    Residential.elevatorList[1].upQueue = []
+    Residential.requestElevator(10, -1).requestFloor(3)
     print("""Scenario over""")
 
 

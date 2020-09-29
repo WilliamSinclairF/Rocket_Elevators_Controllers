@@ -1,36 +1,27 @@
 # Rocket Elevators Controllers
 
-### Table Of Contents:
+### Algorithm Testing:
 
-## Residential_Controller.algo:
+## Javascript:
 
-Pseudocode for the residential problem
+1. Open 'Residential.js'
+2. Scroll all the way down
+3. Uncomment one of the following:
+4. - Residential.Scenario1()
+   - Residential.Scenario2()
+   - Residential.Scenario3()
+5. Open 'index.html' or run '\$ node Residential.js'
 
-## Commercial_Controller.algo:
+## Python:
 
-Pseudocode for the commercial problem
+1. Open 'Residential.py'
+2. Scroll all the way down
+3. Uncomment one of the following:
+4. - first_scenario()
+   - second_scenario()
+   - third_scenario()
+5. run 'Residential.py' using your interpreter of choice
 
-## Any Requirements?
+## Ruby:
 
-### The algorithm...
-
-- must be finite and delimited: If it never ends in trying to solve the problem in question, the algorithm is useless.
-- instructions must be clearly defined and each step must be precise. It must cover all cases and must be unambiguous.
-- must be effective in solving the problem and it must be demonstrated in a simple way (on a board or on paper).
-
-## What Problem?
-
-### Residential:
-
-The algorithm must control a column with two elevators servicing 10 floors.
-
-### Commercial:
-
-The algorithm must control a battery with 4 columns and 3 elevators.
-
-## My Approach?
-
-1. Try to translate the problem into something close to English
-2. If #1 is done, try to make a pseudocode version of the English problem with SOME abstraction of certain details while still describing the entire process step by step.
-
-After doing a decent version of the residential controller, I found that most of the concepts I had used for it could be recycled with some changes for the commercial version so the residential controller will serve as it's blueprint.
+Coming soon...
