@@ -169,44 +169,84 @@ class Elevator {
   }
 }
 //
-//
-//
-//
-//Setup for scenarios
-//
 
 const Residential = new Controller(new Building(10, 0), 2);
 
+//INFO
+
+// elevatorList[0] = Elevator A
+// elevatorList[1] = Elevator B
+
+// direction = 0 = IDLE
+// direction = 1 = UP
+// direction = -1 = DOWN
+
+//requestElevator finds and sends the nearest elevator.
+//requestFloor is the function that runs when someone presses a floor request button.
+
 //scenario 1
-// console.log(Residential);
-// Residential.elevatorList[0].currentFloor = 2;
-// Residential.elevatorList[0].direction = 0;
-// Residential.elevatorList[1].currentFloor = 6;
-// Residential.elevatorList[1].direction = 0;
-// Residential.requestElevator(3, 1).requestFloor(7);
-// console.log(Residential);
+Residential.Scenario1 = () => {
+  //Setup Before
+  console.log(Residential);
+  //Elevator A is Idle at floor 2
+  Residential.elevatorList[0].currentFloor = 2;
+  Residential.elevatorList[0].direction = 0;
+  //Elevator B is Idle at floor 6
+  Residential.elevatorList[1].currentFloor = 6;
+  Residential.elevatorList[1].direction = 0;
+  //Someone is on floor 3 and wants to go to the 7th floor
+  //Elevator A is expected to be sent.
+  Residential.requestElevator(3, 1).requestFloor(7);
+  //Setup After
+  console.log(Residential);
+};
 
-// //scenario 2
-// console.log(Residential);
-// Residential.elevatorList[0].currentFloor = 10;
-// Residential.elevatorList[0].direction = 0;
-// Residential.elevatorList[1].currentFloor = 3;
-// Residential.elevatorList[1].direction = 0;
-// Residential.requestElevator(1, 1).requestFloor(6);
-// Residential.requestElevator(3, 1).requestFloor(5);
-// Residential.requestElevator(9, -1).requestFloor(2);
-// console.log(Residential);
+//scenario 2
+Residential.Scenario2 = () => {
+  //Setup Before
+  console.log(Residential);
+  //Elevator A is Idle at floor 10
+  Residential.elevatorList[0].currentFloor = 10;
+  Residential.elevatorList[0].direction = 0;
+  //Elevator B is idle at floor 3
+  Residential.elevatorList[1].currentFloor = 3;
+  Residential.elevatorList[1].direction = 0;
+  //Someone is on the 1st floor and requests the 6th floor.
+  //Elevator B should be sent.
+  Residential.requestElevator(1, 1).requestFloor(6);
+  // 2 minutes later, someone else is on the 3rd floor and requests the 5th floor. Elevator B should be sent.
+  Residential.requestElevator(3, 1).requestFloor(5);
+  //Finally, a third person is at floor 9 and wants to go down to the 2nd floor.
+  //Elevator A should be sent.
+  Residential.requestElevator(9, -1).requestFloor(2);
+  //Setup After
+  console.log(Residential);
+};
 
-// //scenario 3
-// console.log(Residential);
-// Residential.elevatorList[0].currentFloor = 10;
-// Residential.elevatorList[0].direction = 0;
-// Residential.elevatorList[1].currentFloor = 3;
-// Residential.elevatorList[1].direction = 1;
-// Residential.elevatorList[1].upQueue = [6];
-// Residential.requestElevator(3, -1).requestFloor(2);
-// Residential.elevatorList[1].currentFloor = 6;
-// Residential.elevatorList[1].direction = 0;
-// Residential.elevatorList[1].upQueue = [];
-// Residential.requestElevator(10, -1).requestFloor(3);
-// console.log(Residential);
+//scenario 3
+Residential.Scenario3 = () => {
+  //Setup Before
+  console.log(Residential);
+  // Elevator A is Idle at floor 10
+  Residential.elevatorList[0].currentFloor = 10;
+  Residential.elevatorList[0].direction = 0;
+  // Elevator B is Moving from floor 3 to floor 6
+  Residential.elevatorList[1].currentFloor = 3;
+  Residential.elevatorList[1].direction = 1;
+  Residential.elevatorList[1].upQueue = [6];
+  // Someone is on floor 3 and requests the 2nd floor.
+  // Elevator A should be sent.
+  Residential.requestElevator(3, -1).requestFloor(2);
+  Residential.elevatorList[1].currentFloor = 6;
+  Residential.elevatorList[1].direction = 0;
+  Residential.elevatorList[1].upQueue = [];
+  // 5 minutes later, someone else is on the 10th floor and wants to go to the 3rd. Elevator B should be sent.
+  Residential.requestElevator(10, -1).requestFloor(3);
+  console.log(Residential);
+};
+
+////Uncomment to run:
+
+// Residential.Scenario1()
+// Residential.Scenario2()
+// Residential.Scenario3()
