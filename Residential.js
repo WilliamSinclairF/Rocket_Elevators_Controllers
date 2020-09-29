@@ -242,6 +242,7 @@ Residential.Scenario3 = () => {
   Residential.elevatorList[1].upQueue = [];
   // 5 minutes later, someone else is on the 10th floor and wants to go to the 3rd. Elevator B should be sent.
   Residential.requestElevator(10, -1).requestFloor(3);
+  // Setup After
   console.log(Residential);
 };
 
