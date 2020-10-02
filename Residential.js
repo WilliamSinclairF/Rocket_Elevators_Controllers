@@ -245,4 +245,4 @@ Residential.Scenario3 = () => {
 
 // Residential.Scenario1();
 // Residential.Scenario2();
-// Residential.Scenario3();
+Residential.Scenario3();

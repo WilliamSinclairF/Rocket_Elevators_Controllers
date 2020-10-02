@@ -273,4 +273,4 @@ def third_scenario():
 # # Uncomment to test:
 # first_scenario()
 # second_scenario()
-# third_scenario()
+third_scenario()

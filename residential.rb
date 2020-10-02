@@ -242,15 +242,15 @@ residential = Controller.new(Building.new(10, 0), 2)
 # puts 'Scenario ended'
 
 ##Scenario 3
-# puts 'Scenario started'
-# residential.elevator_list[0].current_floor = 10
-# residential.elevator_list[0].direction = 0
-# residential.elevator_list[1].current_floor = 3
-# residential.elevator_list[1].direction = 1
-# residential.elevator_list[1].up_queue = [6]
-# residential.request_elevator(3, -1).request_floor(2)
-# residential.elevator_list[1].current_floor = 6
-# residential.elevator_list[1].direction = 0
-# residential.elevator_list[1].up_queue = []
-# residential.request_elevator(10, -1).request_floor(3)
-# puts 'Scenario ended'
+puts 'Scenario started'
+residential.elevator_list[0].current_floor = 10
+residential.elevator_list[0].direction = 0
+residential.elevator_list[1].current_floor = 3
+residential.elevator_list[1].direction = 1
+residential.elevator_list[1].up_queue = [6]
+residential.request_elevator(3, -1).request_floor(2)
+residential.elevator_list[1].current_floor = 6
+residential.elevator_list[1].direction = 0
+residential.elevator_list[1].up_queue = []
+residential.request_elevator(10, -1).request_floor(3)
+puts 'Scenario ended'

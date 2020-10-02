@@ -191,50 +191,46 @@ Down queue: ${this.downQueue}
   //sends the elevator to the location of the request and keeps calling the method until there's no other tasks to do
 
   requestThisElevator() {
-    setTimeout(() => {
+    this.controller.elevatorPosition();
+    this.setDirection();
+    if (this.direction === 1) {
+      this.currentFloor === this.upQueue[0] ? this.upQueue.shift() : this.currentFloor++;
       this.controller.elevatorPosition();
-      this.setDirection();
-      if (this.direction === 1) {
-        this.currentFloor === this.upQueue[0] ? this.upQueue.shift() : this.currentFloor++;
-        this.controller.elevatorPosition();
-        this.directionUpdate();
-        return this.upQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
-      } else if (this.direction === -1) {
-        this.currentFloor === this.downQueue[0] ? this.downQueue.shift() : this.currentFloor--;
-        this.controller.elevatorPosition();
-        this.directionUpdate();
-        return this.downQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
-      }
-    }, 500);
+      this.directionUpdate();
+      return this.upQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
+    } else if (this.direction === -1) {
+      this.currentFloor === this.downQueue[0] ? this.downQueue.shift() : this.currentFloor--;
+      this.controller.elevatorPosition();
+      this.directionUpdate();
+      return this.downQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
+    }
   }
 
   // handles floor request button requests inside each elevator
 
   requestFloor(floor) {
-    setTimeout(() => {
+    this.controller.elevatorPosition();
+    if (floor === this.currentFloor) {
+      this.statusMessage.textContent = `${this.whoAmI(
+        this.id
+      )}: Floor ${floor} was requested, opened its doors as it was already on that floor`;
+      return;
+    } else if (floor > this.currentFloor) {
+      this.upQueue.push(floor);
+      this.sortQueues();
+      this.setDirection();
+      this.requestThisElevator();
       this.controller.elevatorPosition();
-      if (floor === this.currentFloor) {
-        this.statusMessage.textContent = `${this.whoAmI(
-          this.id
-        )}: Floor ${floor} was requested, opened its doors as it was already on that floor`;
-        return;
-      } else if (floor > this.currentFloor) {
-        this.upQueue.push(floor);
-        this.sortQueues();
-        this.setDirection();
-        this.requestThisElevator();
-        this.controller.elevatorPosition();
-        this.statusMessage.textContent = `${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`;
-      } else if (floor < this.currentFloor) {
-        this.downQueue.push(floor);
-        this.sortQueues();
-        this.setDirection();
-        this.requestThisElevator();
-        this.controller.elevatorPosition();
-        this.statusMessage.textContent = `${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`;
-      }
-      this.directionUpdate();
-    }, 500);
+      this.statusMessage.textContent = `${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`;
+    } else if (floor < this.currentFloor) {
+      this.downQueue.push(floor);
+      this.sortQueues();
+      this.setDirection();
+      this.requestThisElevator();
+      this.controller.elevatorPosition();
+      this.statusMessage.textContent = `${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`;
+    }
+    this.directionUpdate();
   }
 
   sortQueues() {
