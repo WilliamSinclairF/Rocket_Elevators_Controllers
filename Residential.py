@@ -14,6 +14,8 @@ class Controller():
         self.elevatorList = []
         self.createElevators()
 
+    # makes and adds elevators to array
+
     def createElevators(self):
         gapPerElevator = self.building.floors / self.elevatorNumber
         for i in range(self.elevatorNumber):
@@ -23,6 +25,8 @@ class Controller():
             else:
                 self.elevatorList.append(
                     Elevator(i, (i + gapPerElevator), (i + gapPerElevator), 0))
+
+    # finds elevator by direction, returns moving or idle if none are moving
 
     def findElevatorsByDirection(self, elevatorDirection):
         elevatorsWithSameDirection = [
@@ -37,12 +41,16 @@ class Controller():
         else:
             return idleElevators
 
+    # finds nearest elevator based on request location
+
     def findNearestElevator(self, elevatorDirection, requestLocation):
         elevators = self.findElevatorsByDirection(elevatorDirection)
         for elevator in elevators:
             elevator.distanceScore = abs(
                 requestLocation - elevator.currentFloor)
         return functools.reduce((lambda a, b: a if a.distanceScore < b.distanceScore else b), elevators)
+
+    # sends the previously found elevator to the location of the request
 
     def requestElevator(self, requestLocation, requestDirection):
         if requestLocation > self.building.floors:
@@ -113,6 +121,8 @@ class Elevator():
             f"""{self.who_am_i()}: Added floor {floor} to it's queue""")
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
+    # decides which direction go take
+
     def setDirection(self):
         if self.direction == 0:
             if len(self.upQueue) > len(self.downQueue):
@@ -141,6 +151,8 @@ class Elevator():
                 else:
                     self.direction = 0
 
+    # handles requests while it's queue is not empty
+
     def requestThisElevator(self):
         self.status_update()
         self.setDirection()
@@ -168,6 +180,8 @@ class Elevator():
             else:
                 self.direction = 0
                 self.status_update()
+
+    # handles floor requests
 
     def requestFloor(self, floor):
         if floor == self.currentFloor:

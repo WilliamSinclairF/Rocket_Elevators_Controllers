@@ -10,7 +10,7 @@
 4. - Residential.Scenario1()
    - Residential.Scenario2()
    - Residential.Scenario3()
-5. Open 'index.html' or run '\$ node Residential.js'
+5. Open 'index.html' or run '\$ node Residential.js'.
 
 ## Python:
 
@@ -20,8 +20,11 @@
 4. - first_scenario()
    - second_scenario()
    - third_scenario()
-5. run 'Residential.py' using your interpreter of choice
+5. run 'Residential.py' using your interpreter of choice.
 
 ## Ruby:
 
-Coming soon...
+1. Open 'Residential.rb'
+2. Scroll all the way down
+3. Uncomment your scenario of choice
+4. Run 'Residential.rb' using your interpreter of choice.

@@ -1,0 +1,85 @@
+#heading {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#logo {
+  margin: 20px;
+}
+
+#quotebutton {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+#status {
+  text-align: center;
+  margin-top: 20px;
+  min-height: 50px;
+  min-width: 100%;
+}
+
+.child-div span {
+  margin-right: auto;
+}
+
+.floor {
+  display: flex;
+  justify-content: center;
+  border: 1px solid black;
+  height: auto;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.elevatorcontainer {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.child-div {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+#elevators {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.elevator {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+.title {
+  text-align: center;
+}
+.floor-number {
+  text-align: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.info {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.elevator button {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px;
+}
+
+.hidden {
+  display: none !important;
+}

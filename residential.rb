@@ -16,12 +16,15 @@ class Controller
     create_elevators
   end
 
+  # adds elavators to array
   def create_elevators
     @elevator_number.times do |i|
       floor_gap = @building.floors / @elevator_number * i
       elevator_list.append(Elevator.new(i, 1 + floor_gap, 1 + floor_gap))
     end
   end
+
+  #finds elevators that are moving or idle elevators if none are moving
 
   def find_elevators_by_direction(elevator_direction)
     same_direction = @elevator_list.select { |elevator| elevator.direction == elevator_direction }
@@ -33,11 +36,15 @@ class Controller
     end
   end
 
+  # finds nearest elevator that's going in the same direction
+
   def find_nearest_elevator(elevator_direction, request_location)
     elevators = find_elevators_by_direction(elevator_direction)
     elevators.each { |elevator| elevator.distance_score = (request_location - elevator.current_floor).abs }
     return elevators.min { |a, b| a.distance_score <=> b.distance_score }
   end
+
+  # handles elevator requests
 
   def request_elevator(request_location, request_direction)
     filtered_elevator = find_nearest_elevator(request_direction, request_location)
@@ -110,6 +117,8 @@ class Elevator
     puts '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
   end
 
+  #handles deciding which direction to go in
+
   def set_direction()
     case self.direction
     when 0
@@ -141,6 +150,8 @@ class Elevator
         end
       end
     end
+
+    # handles requests while its queue is not empty
 
     def request_this_elevator()
       self.set_direction
@@ -185,6 +196,8 @@ class Elevator
         end
       end
     end
+
+    # responds to floor requests from within the elevator
 
     def request_floor(floor)
       if floor == self.current_floor
