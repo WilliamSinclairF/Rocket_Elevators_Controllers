@@ -10,7 +10,7 @@
 4. - Residential.Scenario1()
    - Residential.Scenario2()
    - Residential.Scenario3()
-5. Open 'index.html' or run '\$ node Residential.js'.
+5. Open 'ResidentialJS.html' or run '\$ node Residential.js'.
 
 ## Python:
 
