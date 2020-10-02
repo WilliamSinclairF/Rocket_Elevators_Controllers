@@ -25,50 +25,34 @@ class Controller {
   // finds moving elevators that are going in the same direction or idle elevators if there aren't any moving ones
 
   findElevatorsByDirection(elevatorDirection) {
-    let elevatorsWithSameDirection = [...this.elevatorList].filter((el) => el.direction === elevatorDirection);
-    let idleElevators = [...this.elevatorList].filter((el) => el.direction === 0);
-    return elevatorsWithSameDirection.length > 0 ? elevatorsWithSameDirection : idleElevators;
+    return [...this.elevatorList].filter((el) => el.direction === elevatorDirection).length > 0
+      ? [...this.elevatorList].filter((el) => el.direction === elevatorDirection)
+      : [...this.elevatorList].filter((el) => el.direction === 0);
   }
 
   findNearestElevator(elevatorDirection, requestLocation) {
-    let elevators = this.findElevatorsByDirection(elevatorDirection);
-    elevators.forEach((elevator) => (elevator.distanceScore = Math.abs(requestLocation - elevator.currentFloor)));
-    return elevators.reduce((prev, curr) => (prev.distanceScore < curr.distanceScore ? prev : curr));
+    this.findElevatorsByDirection(elevatorDirection).forEach(
+      (elevator) => (elevator.distanceScore = Math.abs(requestLocation - elevator.currentFloor))
+    );
+    return this.findElevatorsByDirection(elevatorDirection).reduce((prev, curr) =>
+      prev.distanceScore < curr.distanceScore ? prev : curr
+    );
   }
 
   // handles finding the nearest elevator and sending it to answer the call
 
   requestElevator(requestLocation, requestDirection) {
     if (requestLocation > this.building.floors) return;
-    let filteredElevator = this.findNearestElevator(requestDirection, requestLocation);
-    let { id, currentFloor } = filteredElevator;
-    let actualElevator = this.elevatorList[id];
+    let { id } = this.findNearestElevator(requestDirection, requestLocation);
+    let selectedElevator = this.elevatorList[id];
 
-    if (currentFloor > requestLocation) {
-      console.log(
-        `Elevator was requested. ${actualElevator.whoAmI(actualElevator.id)} added floor: ${requestLocation}`,
-        actualElevator
-      );
-      actualElevator.downQueue.push(requestLocation);
-      actualElevator.sortQueues();
-      actualElevator.setDirection();
-      actualElevator.requestThisElevator();
-      return actualElevator;
-    } else if (currentFloor < requestLocation) {
-      console.log(
-        `Elevator was requested. ${actualElevator.whoAmI(actualElevator.id)} added floor: ${requestLocation}`,
-        actualElevator
-      );
-      actualElevator.upQueue.push(requestLocation);
-      actualElevator.sortQueues();
-      actualElevator.setDirection();
-      actualElevator.requestThisElevator();
+    console.log(
+      `Elevator was requested. ${selectedElevator.whoAmI()} added floor: ${requestLocation}`,
+      selectedElevator
+    );
+    selectedElevator.addToQueue(requestLocation);
 
-      return actualElevator;
-    } else if (currentFloor == requestLocation) {
-      console.log(`elevator${id} opening doors`, actualElevator);
-      return actualElevator;
-    }
+    return selectedElevator;
   }
 }
 
@@ -82,6 +66,16 @@ class Elevator {
     this.upQueue = [];
     this.downQueue = [];
   }
+
+  //grouping frequently used functions together to make things easier to read
+  addToQueue(location) {
+    location > this.currentFloor ? this.upQueue.push(location) : this.downQueue.push(location);
+    this.sortQueues();
+    this.setDirection();
+    this.requestThisElevator();
+    return this;
+  }
+
   whoAmI() {
     return `Elevator ${String.fromCharCode(this.id + 65)}`;
   }
@@ -108,44 +102,48 @@ Down queue: ${this.downQueue}
 
   setDirection() {
     this.directionUpdate();
-    if (this.direction === 0) {
-      this.upQueue.length > this.downQueue.length ? (this.direction = 1) : (this.direction = -1);
+    switch (this.direction) {
+      case 0:
+        this.upQueue.length > this.downQueue.length ? (this.direction = 1) : (this.direction = -1);
+        break;
 
-      return this.direction;
-    } else if (this.direction === 1) {
-      this.upQueue.length > 0
-        ? () => {
-            this.direction = 1;
-            return this.direction;
-          }
-        : () => {
-            this.downQueue.length > 0 ? (this.direction = -1) : (this.direction = 0);
-            return this.direction;
-          };
-    } else if (this.direction === -1) {
-      this.downQueue.length > 0
-        ? () => {
-            this.direction = -1;
-            return this.direction;
-          }
-        : () => {
-            this.upQueue.length > 0 ? (this.direction = 1) : (this.direction = 0);
-            return this.direction;
-          };
+      case 1:
+        this.upQueue.length > 0
+          ? (this.direction = 1)
+          : () => {
+              this.downQueue.length > 0 ? (this.direction = -1) : (this.direction = 0);
+            };
+        break;
+
+      case -1:
+        this.downQueue.length > 0
+          ? (this.direction = -1)
+          : () => {
+              this.upQueue.length > 0 ? (this.direction = 1) : (this.direction = 0);
+            };
+        break;
+
+      default:
+        break;
     }
+    return this.direction;
   }
 
   // goes through all requests until up and down queues are empty
 
   requestThisElevator() {
     this.setDirection();
+    switch (this.direction) {
+      case 1:
+        this.currentFloor === this.upQueue[0] ? this.upQueue.shift() : this.currentFloor++;
+        return this.upQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
 
-    if (this.direction === 1) {
-      this.currentFloor === this.upQueue[0] ? this.upQueue.shift() : this.currentFloor++;
-      return this.upQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
-    } else if (this.direction === -1) {
-      this.currentFloor === this.downQueue[0] ? this.downQueue.shift() : this.currentFloor--;
-      return this.downQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
+      case -1:
+        this.currentFloor === this.downQueue[0] ? this.downQueue.shift() : this.currentFloor--;
+        return this.downQueue.length > 0 ? this.requestThisElevator() : (this.direction = 0);
+
+      default:
+        break;
     }
   }
 
@@ -154,23 +152,14 @@ Down queue: ${this.downQueue}
   requestFloor(floor) {
     if (floor === this.currentFloor) {
       console.log(
-        `${this.whoAmI(this.id)}: Floor ${floor} was requested, opened its doors as it was already on that floor`
+        `${this.whoAmI(this.id)}: Floor ${floor} was requested, doors opened as it was already on that floor`
       );
       return;
-    } else if (floor > this.currentFloor) {
+    } else {
       console.log(`${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`);
-      this.upQueue.push(floor);
-      this.sortQueues();
-      this.setDirection();
-      this.requestThisElevator();
-    } else if (floor < this.currentFloor) {
-      console.log(`${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`);
-      this.downQueue.push(floor);
-      this.sortQueues();
-      this.setDirection();
-      this.requestThisElevator();
+      this.addToQueue(floor);
+      this.directionUpdate();
     }
-    this.directionUpdate();
   }
 
   sortQueues() {
@@ -197,13 +186,13 @@ const Residential = new Controller(new Building(10, 0), 2);
 //scenario 1
 Residential.Scenario1 = () => {
   //Setup Before
-  console.table(Residential.elevatorList);
   //Elevator A is Idle at floor 2
   Residential.elevatorList[0].currentFloor = 2;
   Residential.elevatorList[0].direction = 0;
   //Elevator B is Idle at floor 6
   Residential.elevatorList[1].currentFloor = 6;
   Residential.elevatorList[1].direction = 0;
+  console.table(Residential.elevatorList);
   //Someone is on floor 3 and wants to go to the 7th floor
   //Elevator A is expected to be sent.
   Residential.requestElevator(3, 1).requestFloor(7);
@@ -214,13 +203,13 @@ Residential.Scenario1 = () => {
 //scenario 2
 Residential.Scenario2 = () => {
   //Setup Before
-  console.table(Residential.elevatorList);
   //Elevator A is Idle at floor 10
   Residential.elevatorList[0].currentFloor = 10;
   Residential.elevatorList[0].direction = 0;
   //Elevator B is idle at floor 3
   Residential.elevatorList[1].currentFloor = 3;
   Residential.elevatorList[1].direction = 0;
+  console.table(Residential.elevatorList);
   //Someone is on the 1st floor and requests the 6th floor.
   //Elevator B should be sent.
   Residential.requestElevator(1, 1).requestFloor(6);
@@ -236,7 +225,6 @@ Residential.Scenario2 = () => {
 //scenario 3
 Residential.Scenario3 = () => {
   //Setup Before
-  console.table(Residential.elevatorList);
   // Elevator A is Idle at floor 10
   Residential.elevatorList[0].currentFloor = 10;
   Residential.elevatorList[0].direction = 0;
@@ -244,6 +232,7 @@ Residential.Scenario3 = () => {
   Residential.elevatorList[1].currentFloor = 3;
   Residential.elevatorList[1].direction = 1;
   Residential.elevatorList[1].upQueue = [6];
+  console.table(Residential.elevatorList);
   // Someone is on floor 3 and requests the 2nd floor.
   // Elevator A should be sent.
   Residential.requestElevator(3, -1).requestFloor(2);
