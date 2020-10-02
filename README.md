@@ -1,6 +1,14 @@
-# Rocket Elevators Controllers
+# Rocket Elevators Controllers - How To Use:
 
-### Algorithm Testing:
+## Try out the interactive JS interface at:
+
+https://williamsinclairf.github.io/Rocket_Elevators_Controllers/
+
+Source code available here:
+
+https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/docs
+
+### ...Or do one of the following:
 
 ## Javascript:
 
