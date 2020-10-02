@@ -88,14 +88,12 @@ class Elevator {
   }
 
   directionUpdate() {
-    console.log(
-      `Elevator ${String.fromCharCode(this.id + 65)}:
+    console.log(`${this.whoAmI()}:
 Direction: ${this.directionStatus()}
 Current floor: ${this.currentFloor}
 Up queue: ${this.upQueue}
 Down queue: ${this.downQueue}
-`
-    );
+`);
   }
 
   // decides the direction the elevator should take
@@ -151,12 +149,10 @@ Down queue: ${this.downQueue}
 
   requestFloor(floor) {
     if (floor === this.currentFloor) {
-      console.log(
-        `${this.whoAmI(this.id)}: Floor ${floor} was requested, doors opened as it was already on that floor`
-      );
+      console.log(`${this.whoAmI()}: Floor ${floor} was requested, doors opened as it was already on that floor`);
       return;
     } else {
-      console.log(`${this.whoAmI(this.id)}: Floor button pressed, added floor ${floor} to queue`);
+      console.log(`${this.whoAmI()}: Floor button pressed, added floor ${floor} to queue`);
       this.addToQueue(floor);
       this.directionUpdate();
     }
