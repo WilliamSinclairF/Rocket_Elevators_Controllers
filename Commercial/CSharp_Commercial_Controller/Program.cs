@@ -13,18 +13,23 @@ namespace Commercial_Controller
             //comControl.ColumnList[1].ElevatorList[0].CurrentFloor = 20;
             //comControl.ColumnList[1].ElevatorList[0].Direction = -1;
             //comControl.ColumnList[1].ElevatorList[0].AddToQueue(5);
+
             //comControl.ColumnList[1].ElevatorList[1].CurrentFloor = 3;
             //comControl.ColumnList[1].ElevatorList[1].Direction = 1;
             //comControl.ColumnList[1].ElevatorList[1].AddToQueue(15);
+
             //comControl.ColumnList[1].ElevatorList[2].CurrentFloor = 13;
             //comControl.ColumnList[1].ElevatorList[2].Direction = -1;
             //comControl.ColumnList[1].ElevatorList[2].AddToQueue(0);
-            //comControl.ColumnList[1].ElevatorList[3].CurrentFloor = 40;
+
+            //comControl.ColumnList[1].ElevatorList[3].CurrentFloor = 15;
             //comControl.ColumnList[1].ElevatorList[3].Direction = -1;
-            //comControl.ColumnList[1].ElevatorList[3].AddToQueue(24);
-            //comControl.ColumnList[1].ElevatorList[4].CurrentFloor = 39;
+            //comControl.ColumnList[1].ElevatorList[3].AddToQueue(1);
+
+            //comControl.ColumnList[1].ElevatorList[4].CurrentFloor = 6;
             //comControl.ColumnList[1].ElevatorList[4].Direction = -1;
             //comControl.ColumnList[1].ElevatorList[4].AddToQueue(0);
+
             //comControl.ColumnList[1].FindNearestElevator(0, 1).RequestFloor(20);
 
 
