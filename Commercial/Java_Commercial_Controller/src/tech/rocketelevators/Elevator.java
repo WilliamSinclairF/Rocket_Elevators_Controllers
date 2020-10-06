@@ -85,7 +85,7 @@ public class Elevator {
 			if (!this.upQueue.isEmpty()) {
 				this.requestThisElevator();
 			} else {
-				this.direction = 0;
+//				this.direction = 0;
 				this.statusUpdate();
 			}
 			break;
@@ -99,7 +99,7 @@ public class Elevator {
 			if (!this.downQueue.isEmpty()) {
 				this.requestThisElevator();
 			} else {
-				this.direction = 0;
+//				this.direction = 0;
 				this.statusUpdate();
 			}
 			break;

@@ -43,12 +43,12 @@ namespace Commercial_Controller
                 switch (i)
                 {
                     case 0:
-                        this.ColumnList.Add(new Column(this, i, elevatorsPerColumn, 1, this.Building.Basements));
+                        this.ColumnList.Add(new Column(this, i, elevatorsPerColumn, -6, 0));
                         break;
 
                     case 1:
-                        this.ColumnList.Add(new Column(this, i, elevatorsPerColumn, this.FirstFloor,
-                            this.Building.Basements + floorsPerColumn));
+                        this.ColumnList.Add(new Column(this, i, elevatorsPerColumn, 0,
+                            floorsPerColumn));
                         break;
 
                     default:
@@ -68,19 +68,6 @@ namespace Commercial_Controller
 
             col.FindNearestElevator(requestOrigin, requestDirection);
 
-            //Console.WriteLine($"Column ID:{col.Id}\n" +
-            //                  $"Min floor: {col.MinimumFloor}\n" +
-            //                  $"Max floor: {col.MaximumFloor}\n" +
-            //                  $"Elevator number: {col.ElevatorNumber}\n");
-            //foreach (Elevator e in col.ElevatorList)
-            //{
-            //    Console.WriteLine($"Elevator ID: {e.ElevatorId}\n" +
-            //                      $"Current floor: {e.CurrentFloor}\n" +
-            //                      $"Default floor: {e.DefaultFloor}\n" +
-            //                      $"Direction: {e.Direction}\n" +
-            //                      $"Distance: {e.Distance}\n" +
-            //                      $"Up queue:");
-            //}
             return col;
         }
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\willz\\source\\repos\\Commercial_Controller\\Commercial_Controller.csproj": {}
+    "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj": {}
   },
   "projects": {
-    "C:\\Users\\willz\\source\\repos\\Commercial_Controller\\Commercial_Controller.csproj": {
+    "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\willz\\source\\repos\\Commercial_Controller\\Commercial_Controller.csproj",
+        "projectUniqueName": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj",
         "projectName": "Commercial_Controller",
-        "projectPath": "C:\\Users\\willz\\source\\repos\\Commercial_Controller\\Commercial_Controller.csproj",
+        "projectPath": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj",
         "packagesPath": "C:\\Users\\willz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\willz\\source\\repos\\Commercial_Controller\\obj\\",
+        "outputPath": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\willz\\AppData\\Roaming\\NuGet\\NuGet.Config",
