@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace Commercial_Controller
 {
@@ -96,11 +95,9 @@ namespace Commercial_Controller
             //// Fourth scenario
             //comControl.ColumnList[0].ElevatorList[0].CurrentFloor = -4;
             //comControl.ColumnList[0].ElevatorList[0].Direction = 0;
-            ////comControl.ColumnList[0].ElevatorList[0].DownQueue.Add(7);
 
             //comControl.ColumnList[0].ElevatorList[1].CurrentFloor = 0;
             //comControl.ColumnList[0].ElevatorList[1].Direction = 0;
-            ////comControl.ColumnList[0].ElevatorList[1].UpQueue.Add(66);
 
             //comControl.ColumnList[0].ElevatorList[2].CurrentFloor = -3;
             //comControl.ColumnList[0].ElevatorList[2].Direction = -1;

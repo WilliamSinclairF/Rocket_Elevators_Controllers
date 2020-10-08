@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace Commercial_Controller
 {
     public class Elevator
     {
-
         public int ElevatorId;
         public int ColumnId;
         public int CurrentFloor;
@@ -32,10 +29,10 @@ namespace Commercial_Controller
                 $"Column: {this.ColumnId}, " +
                 $"{nameof(CurrentFloor)}: {this.CurrentFloor}, " +
                 $"{nameof(DefaultFloor)}: {this.DefaultFloor}, " +
-                $"{nameof(Direction)}: {this.showDirection()}, ";
+                $"{nameof(Direction)}: {this.ShowDirection()}, ";
         }
 
-        public String showDirection()
+        public String ShowDirection()
         {
             return this.Direction switch
             {
@@ -46,21 +43,18 @@ namespace Commercial_Controller
             };
         }
 
-        public void showNextStops()
+        public void ShowNextStops()
         {
-            if (this.Direction == 1)
+            switch (this.Direction)
             {
-
-                Console.WriteLine($"Elevator {this.ElevatorId} - Next floor in queue: {this.UpQueue[0]}");
-                Console.WriteLine();
-
-            }
-            else if (this.Direction == -1)
-            {
-
-                Console.WriteLine($"Elevator {this.ElevatorId} - Next floor in queue: {this.DownQueue[0] }");
-                Console.WriteLine();
-
+                case 1:
+                    Console.WriteLine($"Elevator {this.ElevatorId} - Next floor in queue: {this.UpQueue[0]}");
+                    Console.WriteLine();
+                    break;
+                case -1:
+                    Console.WriteLine($"Elevator {this.ElevatorId} - Next floor in queue: {this.DownQueue[0]}");
+                    Console.WriteLine();
+                    break;
             }
         }
 
@@ -82,16 +76,17 @@ namespace Commercial_Controller
             {
                 this.DownQueue.Add(location);
             }
+
             this.CombinedMethods();
         }
 
         public void CombinedMethods()
         {
-            this.showNextStops();
+            this.ShowNextStops();
             this.StatusUpdate();
             this.SortQueues();
             this.SetDirection();
-            this.requestThisElevator();
+            this.RequestThisElevator();
         }
 
         public void SortQueues()
@@ -114,6 +109,7 @@ namespace Commercial_Controller
                     {
                         this.Direction = this.DownQueue.Count == 0 ? 0 : -1;
                     }
+
                     break;
 
                 case -1:
@@ -121,6 +117,7 @@ namespace Commercial_Controller
                     {
                         this.Direction = this.UpQueue.Count == 0 ? 0 : 1;
                     }
+
                     break;
 
                 default:
@@ -128,7 +125,7 @@ namespace Commercial_Controller
             }
         }
 
-        public void requestThisElevator()
+        public void RequestThisElevator()
         {
             this.SetDirection();
             this.StatusUpdate();
@@ -140,7 +137,8 @@ namespace Commercial_Controller
                     {
                         Console.WriteLine();
                         Console.WriteLine("~~~~~~~~~~~~~~~~~~~Rocket Update~~~~~~~~~~~~~~~~~");
-                        Console.WriteLine($"Elevator {this.ElevatorId} arrived on floor {this.UpQueue[0]} and opened it's doors.");
+                        Console.WriteLine(
+                            $"Elevator {this.ElevatorId} arrived on floor {this.UpQueue[0]} and opened it's doors.");
                         Console.WriteLine();
                         this.UpQueue.RemoveAt(0);
                     }
@@ -148,15 +146,17 @@ namespace Commercial_Controller
                     {
                         this.CurrentFloor++;
                     }
+
                     if (this.UpQueue.Count > 0)
                     {
-                        this.requestThisElevator();
+                        this.RequestThisElevator();
                     }
                     else
                     {
                         this.Direction = 0;
                         this.StatusUpdate();
                     }
+
                     break;
 
                 case -1:
@@ -173,20 +173,18 @@ namespace Commercial_Controller
                     {
                         this.CurrentFloor--;
                     }
+
                     if (this.DownQueue.Count > 0)
                     {
-                        this.requestThisElevator();
+                        this.RequestThisElevator();
                     }
                     else
                     {
                         this.Direction = 0;
                         this.StatusUpdate();
                     }
-                    break;
 
-                default:
                     break;
-
             }
         }
 
@@ -196,20 +194,20 @@ namespace Commercial_Controller
             {
                 Console.WriteLine();
                 Console.WriteLine("~~~~~~~~~~~~~~~~~~~Rocket Update~~~~~~~~~~~~~~~~~");
-                Console.WriteLine($"Floor {floor} requested, elevator {this.ElevatorId} was already on that floor and opened it's doors\n");
+                Console.WriteLine(
+                    $"Floor {floor} requested, elevator {this.ElevatorId} was already on that floor and opened it's doors\n");
                 Console.WriteLine();
-
             }
             else
             {
                 Console.WriteLine();
                 Console.WriteLine("~~~~~~~~~~~~~~~~~~~Rocket Update~~~~~~~~~~~~~~~~~");
-                Console.WriteLine($"Elevator {this.ElevatorId}: Floor request button pressed. Added floor {floor} to queue. \n");
+                Console.WriteLine(
+                    $"Elevator {this.ElevatorId}: Floor request button pressed. Added floor {floor} to queue. \n");
                 Console.WriteLine();
                 this.AddToQueue(floor);
                 this.StatusUpdate();
             }
         }
-
     }
 }

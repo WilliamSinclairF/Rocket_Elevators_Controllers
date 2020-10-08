@@ -7,7 +7,6 @@ namespace Commercial_Controller
 {
     public class Column
     {
-
         public Battery battery;
         public int Id;
         public int ElevatorNumber;

@@ -23,55 +23,64 @@ func NewColumn(battery Battery, id, elevatorNumber, minimumFloor, maximumFloor i
 
 func (c Column) createElevators() []Elevator {
 	elevators := make([]Elevator, 0)
-	gapPerElevator := (c.maximumFloor - c.minimumFloor) / c.elevatorNumber
 	for i := 0; i < c.elevatorNumber; i++ {
-		elevators = append(elevators, NewElevator(c.id, i, c.minimumFloor+gapPerElevator))
-		gapPerElevator += i
+		elevators = append(elevators, NewElevator(c.id, i, c.minimumFloor+i))
 	}
 	return elevators
 }
 
-func (c Column) findElevatorsByDirection(elevatorDirection, requestLocation int) []Elevator {
+func (c Column) findElevatorsByDirection(requestLocation, requestDirection int) []Elevator {
+	sameDirection := make([]Elevator, 0)
+	willBeIdle := make([]Elevator, 0)
 	idle := make([]Elevator, 0)
-	moving := make([]Elevator, 0)
-
 	for _, e := range c.elevatorList {
-		switch e.direction {
-		case 0:
+		e.distance = Absolute(e.currentFloor - requestLocation)
+		if e.direction == 1 && e.currentFloor < requestLocation {
+			sameDirection = append(sameDirection, e)
+		}
+		if e.direction == -1 && e.currentFloor > requestLocation {
+			sameDirection = append(sameDirection, e)
+		}
+		if e.direction == 0 {
 			idle = append(idle, e)
-		case 1:
-			if e.currentFloor <= requestLocation {
-				moving = append(moving, e)
+		}
+		if len(e.upQueue) > 0 {
+			if e.upQueue[0] == 0 && len(e.upQueue) == 1 {
+				willBeIdle = append(willBeIdle, e)
 			}
-		case -1:
-			if e.currentFloor >= requestLocation {
-				moving = append(moving, e)
+		}
+		if len(e.downQueue) > 0 {
+			if e.downQueue[0] == 0 && len(e.downQueue) == 1 {
+				willBeIdle = append(willBeIdle, e)
 			}
 		}
 	}
-	if len(moving) > 0 {
-		return moving
+	if len(sameDirection) > 0 {
+		return sameDirection
+
+	} else if len(willBeIdle) > 0 {
+		return willBeIdle
+
+	} else {
+		return idle
 	}
-	return idle
 }
 
-func (c Column) findNearestElevator(elevatorDirection, requestLocation int) *Elevator {
-	elevators := c.findElevatorsByDirection(elevatorDirection, requestLocation)
-	for i := range elevators {
-		elevators[i].distance = Absolute(elevators[i].currentFloor - requestLocation)
-	}
+func (c Column) findNearestElevator(requestLocation, requestDirection int) *Elevator {
+	elevators := c.findElevatorsByDirection(requestLocation, requestDirection)
 	nearestElevator := elevators[0]
-	for _, v := range elevators {
-		if v.distance < nearestElevator.distance {
-			nearestElevator = v
+	for _, e := range elevators {
+		if e.distance < nearestElevator.distance {
+			nearestElevator = e
 		}
 	}
 	id := nearestElevator.elevatorID
-	c.elevatorList[id].addToQueue(requestLocation)
-	return &c.elevatorList[id]
+	elevator := &c.elevatorList[id]
+	return elevator
 }
 
 func (c Column) requestElevator(requestLocation, requestDirection int) *Elevator {
-	c.findNearestElevator(requestDirection, requestLocation).addToQueue(requestLocation)
-	return c.findNearestElevator(requestDirection, requestLocation)
+	nearestElevator := c.findNearestElevator(requestLocation, requestDirection)
+	nearestElevator.addToQueue(requestLocation)
+	return nearestElevator
 }

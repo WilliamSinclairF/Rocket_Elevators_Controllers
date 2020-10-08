@@ -13,7 +13,6 @@ public class Battery {
 
 	public Battery(Building building, int totalColumns, int totalElevators) {
 		this.building = building;
-		this.firstFloor = building.basements + 1;
 		this.totalColumns = totalColumns;
 		this.totalElevators = totalElevators;
 		this.columnList = new ArrayList<>();
@@ -27,12 +26,11 @@ public class Battery {
 			int elevatorsPerColumn = totalElevators / totalColumns;
 			switch (i) {
 			case 0:
-				this.columnList.add(new Column(this, i, elevatorsPerColumn, 1, this.building.basements));
+				this.columnList.add(new Column(this, i, elevatorsPerColumn, -building.basements, 0));
 				break;
 
 			case 1:
-				this.columnList.add(new Column(this, i, elevatorsPerColumn, this.firstFloor,
-						this.building.basements + floorsPerColumn));
+				this.columnList.add(new Column(this, i, elevatorsPerColumn, 0, floorsPerColumn));
 				break;
 
 			default:

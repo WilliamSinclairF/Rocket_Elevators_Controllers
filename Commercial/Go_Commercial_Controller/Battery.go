@@ -5,10 +5,11 @@ type Battery struct {
 	Building                                 Building
 	firstFloor, totalColumns, totalElevators int
 	columnList                               []Column
+	lastRequestedElevator                    Elevator
 }
 
 // NewBattery : Battery factory function
-func NewBattery(building Building, totalColumns int, totalElevators int) *Battery {
+func NewBattery(building Building, totalColumns int, totalElevators int) Battery {
 	b := Battery{
 		Building:       building,
 		totalColumns:   totalColumns,
@@ -16,7 +17,7 @@ func NewBattery(building Building, totalColumns int, totalElevators int) *Batter
 		columnList:     make([]Column, 0),
 	}
 	b.columnList = b.createColumns()
-	return &b
+	return b
 }
 
 func (b Battery) createColumns() []Column {
@@ -39,15 +40,4 @@ func (b Battery) createColumns() []Column {
 		}
 	}
 	return columns
-}
-
-func (b Battery) findColumn(requestLocation, requestDirection int) *Column {
-	index := 0
-	for i, c := range b.columnList {
-		if requestLocation >= c.minimumFloor && requestLocation <= c.maximumFloor {
-			index = i
-			break
-		}
-	}
-	return &b.columnList[index]
 }

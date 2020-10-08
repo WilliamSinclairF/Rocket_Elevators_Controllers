@@ -47,20 +47,37 @@ public class Column {
 		for (int i = 0; i < elevatorNumber; i++) {
 			int gapPerElevator = 1 + ((this.maximumFloor - this.minimumFloor) / this.elevatorNumber * i - 1);
 			int defaultFloor = this.minimumFloor + gapPerElevator;
-			this.elevatorList.add(new Elevator("Column" + i, i, defaultFloor, defaultFloor));
+			this.elevatorList.add(new Elevator("Column" + this.id, i, defaultFloor, defaultFloor));
 		}
 	}
 
-	public List<Elevator> findElevatorsByDirection(int elevatorDirection) {
-		List<Elevator> moving = this.elevatorList.stream().filter(elevator -> elevator.direction == elevatorDirection)
-				.collect(Collectors.toList());
+	public List<Elevator> findElevatorsByDirection(int elevatorDirection, int requestLocation) {
 		List<Elevator> idle = this.elevatorList.stream().filter(elevator -> elevator.direction == 0)
 				.collect(Collectors.toList());
-		return !moving.isEmpty() ? moving : idle;
+
+		if (elevatorDirection == 1) {
+			List<Elevator> movingUp = this.elevatorList.stream().filter(
+					elevator -> elevator.direction == elevatorDirection && elevator.currentFloor <= requestLocation)
+					.collect(Collectors.toList());
+			if (!movingUp.isEmpty()) {
+				System.out.println("moving up were found");
+				return movingUp;
+			}
+		} else if (elevatorDirection == -1) {
+			List<Elevator> movingDown = this.elevatorList.stream().filter(
+					elevator -> elevator.direction == elevatorDirection && elevator.currentFloor <= requestLocation)
+					.collect(Collectors.toList());
+			if (!movingDown.isEmpty()) {
+				System.out.println("moving down were found");
+				return movingDown;
+			}
+		}
+		System.out.println("only idle");
+		return idle;
 	}
 
 	public Elevator findNearestElevator(int elevatorDirection, int requestLocation) {
-		List<Elevator> foundElevators = findElevatorsByDirection(elevatorDirection);
+		List<Elevator> foundElevators = findElevatorsByDirection(elevatorDirection, requestLocation);
 		foundElevators.forEach(e -> e.distance = Math.abs(e.currentFloor - requestLocation));
 		return Collections.min(foundElevators, Comparator.comparing(elevator -> elevator.distance));
 	}

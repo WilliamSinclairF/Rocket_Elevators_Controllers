@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // Elevator type
 type Elevator struct {
@@ -26,88 +29,105 @@ func NewElevator(columnID, elevatorID, currentFloor int) Elevator {
 	return e
 }
 
-func (e *Elevator) addToQueue(location int) {
-	if location > e.currentFloor {
-		e.upQueue = append(e.upQueue, location)
-		e.setDirection()
-		e.requestThisElevator()
-	}
-	if location < e.currentFloor {
-		e.downQueue = append(e.downQueue, location)
-		e.setDirection()
-		e.requestThisElevator()
-	}
+func (e *Elevator) setFloor(floor int) {
+	e.currentFloor = floor
 }
 
-func (e *Elevator) combinedMethods() {
-	e.setDirection()
-	e.requestThisElevator()
+func (e *Elevator) status() {
+	fmt.Println(" ")
+	fmt.Println("ELEVATOR ID", e.elevatorID)
+	fmt.Println("DIRECTION", e.direction)
+	fmt.Println("FLOOR", e.currentFloor)
+	fmt.Println("QUEUE UP", e.upQueue)
+	fmt.Println("QUEUE DOWN", e.downQueue)
+	fmt.Println(" ")
+}
+
+func (e *Elevator) sortQueues() {
+	sort.SliceStable(e.upQueue, func(i, j int) bool { return e.upQueue[i] < e.upQueue[j] })
+	sort.SliceStable(e.downQueue, func(i, j int) bool { return e.downQueue[i] > e.downQueue[j] })
+}
+
+func (e *Elevator) addToQueue(location int) {
+	// if location < 0 {
+	// 	if e.currentFloor > location {
+	// 		e.downQueue = append(e.downQueue, location)
+	// 		e.sortQueues()
+	// 		e.requestThisElevator()
+	// 	} else {
+	// 		e.upQueue = append(e.upQueue, location)
+	// 		e.sortQueues()
+	// 		e.requestThisElevator()
+	// 	}
+	// }
+	if location > e.currentFloor {
+		e.upQueue = append(e.upQueue, location)
+		e.sortQueues()
+		e.requestThisElevator()
+	} else if location < e.currentFloor {
+		e.downQueue = append(e.downQueue, location)
+		e.sortQueues()
+		e.requestThisElevator()
+	}
 }
 
 func (e *Elevator) setDirection() {
-
-	switch e.direction {
-	case 0:
-		if len(e.upQueue) > len(e.downQueue) {
-			e.direction = 1
-		} else {
+	if len(e.upQueue) > 0 && len(e.downQueue) == 0 {
+		e.direction = 1
+	} else if len(e.downQueue) > 0 && len(e.upQueue) == 0 {
+		e.direction = -1
+	} else if len(e.downQueue) > 0 && len(e.upQueue) > 0 {
+		if Absolute(e.currentFloor-e.upQueue[0]) > Absolute(e.currentFloor-e.downQueue[0]) {
 			e.direction = -1
+		} else {
+			e.direction = 1
 		}
-
-	case 1:
-		if len(e.upQueue) == 0 {
-			if len(e.downQueue) == 0 {
-				e.direction = 0
-			} else {
-				e.direction = -1
-			}
-		}
-	case -1:
-		if len(e.downQueue) == 0 {
-			if len(e.upQueue) == 0 {
-				e.direction = 0
-			} else {
-				e.direction = 1
-			}
-		}
+	} else if len(e.upQueue) == 0 && len(e.downQueue) == 0 {
+		e.direction = 0
 	}
 }
 
 func (e *Elevator) requestThisElevator() {
 	e.setDirection()
-	fmt.Println("Elevator id", e.elevatorID)
-	fmt.Println("upqueue", e.upQueue)
-	fmt.Println("downqueue", e.downQueue)
-	fmt.Println("currentfloor", e.currentFloor)
-	fmt.Println("direction", e.direction)
-	fmt.Println("...")
-
-	if e.direction == 1 {
+	e.status()
+	switch e.direction {
+	case 1:
 		if e.currentFloor == e.upQueue[0] {
 			e.upQueue = remove(e.upQueue, 0)
-		} else {
-			e.currentFloor++
 		}
 		if len(e.upQueue) > 0 {
+			e.currentFloor++
 			e.requestThisElevator()
-		} else {
-			e.direction = 0
+		} else if len(e.upQueue) == 0 {
+			if len(e.downQueue) > 0 {
+				e.direction = -1
+			} else {
+				e.direction = 0
+			}
 		}
-	} else if e.direction == -1 {
+	case -1:
 		if e.currentFloor == e.downQueue[0] {
 			e.downQueue = remove(e.downQueue, 0)
-		} else {
-			e.currentFloor--
 		}
 		if len(e.downQueue) > 0 {
+			e.currentFloor--
 			e.requestThisElevator()
-		} else {
-			e.direction = 0
+		} else if len(e.downQueue) == 0 {
+			if len(e.upQueue) > 0 {
+				e.direction = 1
+			} else {
+				e.direction = 0
+			}
 		}
 	}
-
 }
 
 func (e *Elevator) requestFloor(floor int) {
-	e.addToQueue(floor)
+	if floor == e.currentFloor {
+		fmt.Println("I'm here", e.elevatorID)
+	} else {
+		fmt.Println("Elevator: ", e.elevatorID)
+		fmt.Println("floor button pressed, added ", floor)
+		e.addToQueue(floor)
+	}
 }

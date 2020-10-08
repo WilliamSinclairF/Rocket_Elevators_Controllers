@@ -33,7 +33,6 @@ namespace Commercial_Controller
         }
 
 
-
         public void CreateColumns()
         {
             for (var i = 0; i < TotalColumns; i++)
@@ -91,7 +90,6 @@ namespace Commercial_Controller
                     foreach (var stopsUp in e.UpQueue)
                     {
                         Console.WriteLine(stopsUp);
-
                     }
 
                     Console.WriteLine($"Down queue:");

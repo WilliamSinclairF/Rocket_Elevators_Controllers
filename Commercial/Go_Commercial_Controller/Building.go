@@ -6,10 +6,10 @@ type Building struct {
 }
 
 // NewBuilding : Building factory function
-func NewBuilding(floors int, basements int) *Building {
+func NewBuilding(floors int, basements int) Building {
 	b := Building{
 		Floors:    floors,
 		Basements: basements,
 	}
-	return &b
+	return b
 }
