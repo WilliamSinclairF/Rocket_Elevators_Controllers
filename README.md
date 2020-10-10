@@ -86,10 +86,9 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 1. Clone the repo
 2. Open the Commercial folder
 3. Open 'Elixir_Commercial_Controller' in your IDE of choice
-   - You'll probably have to put the folder in your Go PATH.
-5. Uncomment your desired scenario in Elixir_Commercial_Controller.exs
-6. Make sure you have Elixir installed - https://elixir-lang.org/install.html
-7. Using your terminal of choice - standard CMD seems to work best on windows - run: '`elixir Elixir_Commercial_Controller.exs`'
+4. Uncomment your desired scenario in Elixir_Commercial_Controller.exs
+5. Make sure you have Elixir installed - https://elixir-lang.org/install.html
+6. Using your terminal of choice - standard CMD seems to work best on windows - run: '`elixir Elixir_Commercial_Controller.exs`'
 
 ### TypeScript:
 1. Clone the repo
