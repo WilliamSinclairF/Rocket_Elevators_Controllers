@@ -62,7 +62,7 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 1. Clone the repo
 2. Open the Commercial folder
 3. Open 'CSharp_Commercial_Controller' in your IDE of choice - Visual Studio recommended.
-- If using Visual Studio, click on CSharp_Commercial_Controller.sln beforehand.
+   - If using Visual Studio, click on CSharp_Commercial_Controller.sln beforehand.
 4. Uncomment your desired scenario in Program.cs.
 5. Compile & run.
 
@@ -78,7 +78,7 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 1. Clone the repo
 2. Open the Commercial folder
 3. Open 'Go_Commercial_Controller' in your IDE of choice
-- You'll probably have to put the folder in your Go PATH.
+   - You'll probably have to put the folder in your Go PATH.
 5. Uncomment your desired scenario in main.go
 6. Compile & run.
 
