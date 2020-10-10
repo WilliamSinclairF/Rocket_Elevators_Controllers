@@ -64,7 +64,7 @@ com.Scenario4 = function () {
     com.columnList[0].elevatorList[3].addToQueue(0);
     com.columnList[0].elevatorList[4].addToQueue(-6);
 };
-// com.Scenario1();
+com.Scenario1();
 // com.Scenario2();
 // com.Scenario3();
 // com.Scenario4();

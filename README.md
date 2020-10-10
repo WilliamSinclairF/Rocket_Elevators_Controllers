@@ -10,7 +10,11 @@ The commercial program had to be written in C# and Go and additional "points" we
 
 Elixir was especially challenging as it is a newer language (though it is based on Erlang which is a few decades old) and doesn't have as much documentation as the Javascripts of the world - Not to mention the fact that it is based around functional programming which is a paradigm I did not know a lot about. After several failures and a lot of team work, I was able to implement a very basic Elixir algorithm. It is not able to go through all the scenarios we were given but still, it's something!
 
-# Rocket Elevators Controllers - Residential Elevator Controllers - HOW TO USE:
+After doing all this work with new languages, the Javascript lover in me (I know) wanted to go back to something JS-ish. I ended writing a TypeScript version of the Java code and tweaked it a little as well. I think it's my favorite one! TypeScript is technically a compiled language, right? 😁
+
+# 🚀 Rocket Elevators Controllers - Residential Elevator Controllers - HOW TO USE : 🚀
+
+## Looking for commercial? Keep scrolling going down
 
 ### Try out the interactive JS interface at:
 
@@ -22,7 +26,7 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 
 #### ...Or do one of the following:
 
-## Javascript:
+### Javascript:
 
 1. Open 'Residential.js'
 2. Scroll all the way down
@@ -30,9 +34,9 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 4. - Residential.Scenario1()
    - Residential.Scenario2()
    - Residential.Scenario3()
-5. Open 'ResidentialJS.html' or run '\$ node Residential.js'.
+5. Open 'ResidentialJS.html' or run '\$ `node Residential.js`'.
 
-## Python:
+### Python:
 
 1. Open 'Residential.py'
 2. Scroll all the way down
@@ -42,11 +46,54 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
    - third_scenario()
 5. run 'Residential.py' using your interpreter of choice.
 
-## Ruby:
+### Ruby:
 
 1. Open 'Residential.rb'
 2. Scroll all the way down
 3. Uncomment your scenario of choice
 4. Run 'Residential.rb' using your interpreter of choice.
 
-# Rocket Elevators Controllers - Commercial Elevator Controllers - HOW TO USE:
+# 🚀 Rocket Elevators Controllers - Commercial Elevator Controllers - HOW TO USE: 🚀
+
+### C#:
+1. Clone the repo
+2. Open the Commercial folder
+3. Open 'CSharp_Commercial_Controller' in your IDE of choice - Visual Studio recommended.
+- If using Visual Studio, click on CSharp_Commercial_Controller.sln beforehand.
+4. Uncomment your desired scenario in Program.cs.
+5. Compile & run.
+
+### Java:
+1. Clone the repo
+2. Open the Commercial folder
+3. Open 'Java_Commercial_Controller' in your IDE of choice - IntelliJ or Eclipse recommended.
+4. Navigate to 'src/tech/rocketelevators/'
+5. Uncomment your desired scenario in Main.java
+6. Compile & run.
+
+### Go:
+1. Clone the repo
+2. Open the Commercial folder
+3. Open 'Go_Commercial_Controller' in your IDE of choice
+- You'll probably have to put the folder in your Go PATH.
+5. Uncomment your desired scenario in main.go
+6. Compile & run.
+
+### Elixir (only supports first two scenarios)
+1. Clone the repo
+2. Open the Commercial folder
+3. Open 'Elixir_Commercial_Controller' in your IDE of choice
+- You'll probably have to put the folder in your Go PATH.
+5. Uncomment your desired scenario in Elixir_Commercial_Controller.exs
+6. Make sure you have Elixir installed - https://elixir-lang.org/install.html
+7. Using your terminal of choice - standard CMD seems to work best on windows - run: '`elixir Elixir_Commercial_Controller.exs`'
+
+### TypeScript:
+1. Clone the repo
+2. Open the Commercial folder
+3. Open 'TypeScript_Commercial_Controller' in your IDE of choice
+5. Uncomment your desired scenario in Controller.ts
+6. Make sure you have TypeScript installed - https://www.typescriptlang.org/download
+7. Compile using tsc - if you're not familiar with TS, https://www.typescriptlang.org/docs/handbook/typescript-tooling-in-5-minutes.html goes through the procedure.
+8. run $ `node Controller.js`
+- if you have ts-node installed, you can also run $ `ts-node Controller.ts`
