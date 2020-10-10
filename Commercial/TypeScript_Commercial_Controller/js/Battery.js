@@ -9,6 +9,7 @@ var Battery = /** @class */ (function () {
         this.totalElevators = totalElevators;
         this.createColumns();
     }
+    // makes columns and assigns each column to the floors it'll handle. one column has the basement and first floor, others handle an even share of floors.
     Battery.prototype.createColumns = function () {
         var floorsPerColumn = (this.building.floors - this.building.basements) / (this.totalColumns - 1);
         var elevatorsPerColumn = this.totalElevators / this.totalColumns;

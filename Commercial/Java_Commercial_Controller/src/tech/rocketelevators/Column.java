@@ -43,6 +43,8 @@ public class Column {
 		}
 	}
 
+ // makes elevators based on the elevator number passed to the constructor
+
 	public void createElevators() {
 		for (int i = 0; i < elevatorNumber; i++) {
 			int gapPerElevator = 1 + ((this.maximumFloor - this.minimumFloor) / this.elevatorNumber * i - 1);
@@ -50,6 +52,8 @@ public class Column {
 			this.elevatorList.add(new Elevator("Column" + this.id, i, defaultFloor, defaultFloor));
 		}
 	}
+
+ // returns elevators going in the same direction if there are any, returns idle otherwise
 
 	public List<Elevator> findElevatorsByDirection(int elevatorDirection, int requestLocation) {
 		List<Elevator> idle = this.elevatorList.stream().filter(elevator -> elevator.direction == 0)
@@ -76,11 +80,17 @@ public class Column {
 		return idle;
 	}
 
+ // compares the distance of each elevator and returns the nearest one using the array provided by the previous method
+
+
 	public Elevator findNearestElevator(int elevatorDirection, int requestLocation) {
 		List<Elevator> foundElevators = findElevatorsByDirection(elevatorDirection, requestLocation);
 		foundElevators.forEach(e -> e.distance = Math.abs(e.currentFloor - requestLocation));
 		return Collections.min(foundElevators, Comparator.comparing(elevator -> elevator.distance));
 	}
+
+ // calls the previous elevator-finding related methods and sends the selected elevator on it's way
+
 
 	public Elevator requestElevator(int requestLocation, int requestDirection) {
 		Elevator nearestToRequest = this.findNearestElevator(requestDirection, requestLocation);

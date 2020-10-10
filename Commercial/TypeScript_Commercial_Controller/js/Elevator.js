@@ -12,6 +12,7 @@ var Elevator = /** @class */ (function () {
         this.upQueue = [];
         this.downQueue = [];
     }
+    // because everyone likes a good console log
     Elevator.prototype.getId = function () {
         return "Elevator " + String.fromCharCode(this.columnId + 65) + (this.id + 1);
     };
@@ -29,6 +30,7 @@ var Elevator = /** @class */ (function () {
     Elevator.prototype.floorReached = function () {
         console.log(this.getId() + " stopped on floor " + this.currentFloor + " as it was in it's queue and opened it's doors.\n        ");
     };
+    // adds requested location to the right queue
     Elevator.prototype.addToQueue = function (location) {
         if (location > this.currentFloor) {
             this.upQueue.push(location);
@@ -39,15 +41,18 @@ var Elevator = /** @class */ (function () {
             this.combinedMethods();
         }
     };
+    // keep things clean by putting methods in methods
     Elevator.prototype.combinedMethods = function () {
         this.sortQueues();
         this.setDirection();
         this.requestThisElevator();
     };
+    // this method does what it says it does - order is reversed when going down
     Elevator.prototype.sortQueues = function () {
         this.upQueue.sort();
         this.downQueue.sort().reverse();
     };
+    // if elevator is idle, this sets the direction of the elevator based on the length of up and down queues. otherwise, puts elevator in idle when its done.
     Elevator.prototype.setDirection = function () {
         switch (this.direction) {
             case 0:
@@ -74,6 +79,7 @@ var Elevator = /** @class */ (function () {
                 break;
         }
     };
+    // moves the elevator until it reaches a requested stop. method keeps calling itself until it reaches a floor in its queue.
     Elevator.prototype.requestThisElevator = function () {
         this.setDirection();
         this.statusUpdate();
@@ -114,6 +120,7 @@ var Elevator = /** @class */ (function () {
                 break;
         }
     };
+    // handles floor requests given to the elevator when a button within the elevator is pushed.
     Elevator.prototype.requestFloor = function (floor) {
         if (floor === this.currentFloor) {
             console.log("Floor " + floor + " - request answered by " + this.id + ", elevator opened it's doors as it was already there ");

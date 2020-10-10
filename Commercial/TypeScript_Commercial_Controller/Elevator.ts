@@ -23,6 +23,8 @@ export default class Elevator {
         this.downQueue = [];
     }
 
+    // because everyone likes a good console log
+
     getId(): String {
         return `Elevator ${String.fromCharCode(this.columnId + 65)}${this.id + 1}`;
     }
@@ -53,6 +55,8 @@ Queue down: ${this.downQueue}
         `);
     }
 
+    // adds requested location to the right queue
+
     addToQueue(location: number): void {
         if (location > this.currentFloor) {
             this.upQueue.push(location);
@@ -63,16 +67,22 @@ Queue down: ${this.downQueue}
         }
     }
 
+    // keep things clean by putting methods in methods
+
     combinedMethods(): void {
         this.sortQueues();
         this.setDirection();
         this.requestThisElevator();
     }
 
+    // this method does what it says it does - order is reversed when going down
+
     sortQueues(): void {
         this.upQueue.sort();
         this.downQueue.sort().reverse();
     }
+
+    // if elevator is idle, this sets the direction of the elevator based on the length of up and down queues. otherwise, puts elevator in idle when its done.
 
     setDirection(): void {
         switch (this.direction) {
@@ -99,6 +109,8 @@ Queue down: ${this.downQueue}
                 break;
         }
     }
+
+    // moves the elevator until it reaches a requested stop. method keeps calling itself until it reaches a floor in its queue.
     requestThisElevator(): void {
         this.setDirection();
         this.statusUpdate();
@@ -136,6 +148,8 @@ Queue down: ${this.downQueue}
                 break;
         }
     }
+
+    // handles floor requests given to the elevator when a button within the elevator is pushed.
 
     requestFloor(floor: number): void {
         if (floor === this.currentFloor) {

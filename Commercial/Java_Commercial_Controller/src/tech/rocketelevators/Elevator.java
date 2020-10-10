@@ -20,6 +20,8 @@ public class Elevator {
 		this.defaultFloor = defaultFloor;
 	}
 
+// because everyone likes a good console log
+
 	public void statusUpdate() {
 		System.out.printf(
 				"Column ID: %s:%nElevator %s:%nCurrent floor: %s,%nDirection: %s,%n next floor up: %s,%n next floor down: %s%n",
@@ -27,6 +29,8 @@ public class Elevator {
 				this.downQueue.toString());
 		System.out.println();
 	}
+
+ // adds requested location to the right queue
 
 	public void addToQueue(int location) {
 		if (location > this.currentFloor) {
@@ -37,16 +41,22 @@ public class Elevator {
 		this.combinedMethods();
 	}
 
+// keep things clean by putting methods in methods
+
 	public void combinedMethods() {
 		this.sortQueues();
 		this.setDirection();
 		this.requestThisElevator();
 	}
 
+// this method does what it says it does - order is reversed when going down
+
 	public void sortQueues() {
 		Collections.sort(this.upQueue);
 		this.downQueue.sort(Collections.reverseOrder());
 	}
+
+// if elevator is idle, this sets the direction of the elevator based on the length of up and down queues. otherwise, puts elevator in idle when its done.
 
 	public void setDirection() {
 		switch (this.direction) {
@@ -71,6 +81,8 @@ public class Elevator {
 			break;
 		}
 	}
+
+// moves the elevator until it reaches a requested stop. method keeps calling itself until it reaches a floor in its queue.
 
 	public void requestThisElevator() {
 		this.setDirection();
@@ -109,6 +121,8 @@ public class Elevator {
 
 		}
 	}
+
+// handles floor requests given to the elevator when a button within the elevator is pushed.
 
 	public void requestFloor(int floor) {
 		if (floor == this.currentFloor) {

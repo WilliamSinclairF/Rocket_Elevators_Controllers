@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CSharp_Commercial_Controller
+﻿namespace CSharp_Commercial_Controller
 {
     public class Building
     {

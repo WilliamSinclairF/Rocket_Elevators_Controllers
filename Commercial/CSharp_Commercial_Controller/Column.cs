@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CSharp_Commercial_Controller
 {
@@ -26,6 +25,8 @@ namespace CSharp_Commercial_Controller
             this.CreateElevators();
         }
 
+        // makes elevators based on the elevator number passed to the constructor
+
         public void CreateElevators()
         {
             for (var i = 0; i < ElevatorNumber; i++)
@@ -35,6 +36,8 @@ namespace CSharp_Commercial_Controller
                 this.ElevatorList.Add(new Elevator(i + 1, this.Id, defaultFloor, defaultFloor));
             }
         }
+
+        // returns elevators going in the same direction if there are any, returns idle otherwise
 
         public List<Elevator> FindElevatorsByDirection(int elevatorDirection, int requestLocation)
         {
@@ -53,7 +56,9 @@ namespace CSharp_Commercial_Controller
             return moving.Count > 0 ? moving : idle;
         }
 
-        public Elevator FindNearestElevator(int requestLocation, int requestDirection)
+        // compares the distance of each elevator, returns the nearest one and sends it to the location of the request
+
+        public Elevator RequestElevator(int requestLocation, int requestDirection)
         {
             var foundElevators = this.FindElevatorsByDirection(requestDirection, requestLocation);
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 
 namespace CSharp_Commercial_Controller
 {
@@ -32,6 +30,7 @@ namespace CSharp_Commercial_Controller
             Console.WriteLine("Battery: " + message);
         }
 
+        // makes columns and assigns each column to the floors it'll handle. one column has the basement and first floor, others handle an even share of floors.
 
         public void CreateColumns()
         {

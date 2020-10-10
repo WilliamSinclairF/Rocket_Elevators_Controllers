@@ -22,6 +22,8 @@ namespace CSharp_Commercial_Controller
             this.DefaultFloor = defaultFloor;
         }
 
+        // because everyone likes a good console log
+
         public override string ToString()
         {
             return
@@ -65,6 +67,8 @@ namespace CSharp_Commercial_Controller
                 ToString());
         }
 
+        // adds requested location to the right queue
+
 
         public void AddToQueue(int location)
         {
@@ -80,6 +84,8 @@ namespace CSharp_Commercial_Controller
             this.CombinedMethods();
         }
 
+        // keep things clean by putting methods in methods
+
         public void CombinedMethods()
         {
             this.ShowNextStops();
@@ -89,42 +95,15 @@ namespace CSharp_Commercial_Controller
             this.RequestThisElevator();
         }
 
+        // this method does what it says it does - order is reversed when going down
+
         public void SortQueues()
         {
             this.UpQueue.Sort();
             this.DownQueue.Reverse();
         }
 
-        /*
-        public void SetDirection()
-        {
-            switch (this.Direction)
-            {
-                case 0:
-                    this.Direction = this.UpQueue.Count > this.DownQueue.Count ? 1 : -1;
-                    break;
-
-                case 1:
-                    if (this.UpQueue.Count == 0)
-                    {
-                        this.Direction = this.DownQueue.Count == 0 ? 0 : -1;
-                    }
-
-                    break;
-
-                case -1:
-                    if (this.DownQueue.Count == 0)
-                    {
-                        this.Direction = this.UpQueue.Count == 0 ? 0 : 1;
-                    }
-
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        */
+        // if elevator is idle, this sets the direction of the elevator based on the length of up and down queues. otherwise, puts elevator in idle when its done.
 
         public void SetDirection()
         {
@@ -157,6 +136,7 @@ namespace CSharp_Commercial_Controller
             }
         }
 
+        // moves the elevator until it reaches a requested stop. method keeps calling itself until it reaches a floor in its queue.
 
         public void RequestThisElevator()
         {
@@ -220,6 +200,8 @@ namespace CSharp_Commercial_Controller
                     break;
             }
         }
+
+        // handles floor requests given to the elevator when a button within the elevator is pushed.
 
         public void RequestFloor(int floor)
         {

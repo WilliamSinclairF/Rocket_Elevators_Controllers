@@ -86,7 +86,7 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 1. Clone the repo
 2. Open the Commercial folder
 3. Open 'Elixir_Commercial_Controller' in your IDE of choice
-- You'll probably have to put the folder in your Go PATH.
+   - You'll probably have to put the folder in your Go PATH.
 5. Uncomment your desired scenario in Elixir_Commercial_Controller.exs
 6. Make sure you have Elixir installed - https://elixir-lang.org/install.html
 7. Using your terminal of choice - standard CMD seems to work best on windows - run: '`elixir Elixir_Commercial_Controller.exs`'
@@ -99,4 +99,7 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 6. Make sure you have TypeScript installed - https://www.typescriptlang.org/download
 7. Compile using tsc - if you're not familiar with TS, https://www.typescriptlang.org/docs/handbook/typescript-tooling-in-5-minutes.html goes through the procedure.
 8. run $ `node Controller.js`
-- if you have ts-node installed, you can also run $ `ts-node Controller.ts`
+   - if you have ts-node installed, you can also run $ `ts-node Controller.ts`
+
+
+In need of an elevator solution? https://rocketelevators.tech/ has you covered...

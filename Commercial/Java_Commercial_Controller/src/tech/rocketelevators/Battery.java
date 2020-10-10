@@ -20,6 +20,8 @@ public class Battery {
 
 	}
 
+	// makes columns and assigns each column to the floors it'll handle. one column has the basement and first floor, others handle an even share of floors.
+
 	public void createColumns() {
 		for (int i = 0; i < totalColumns; i++) {
 			int floorsPerColumn = (building.floors - building.basements) / (totalColumns - 1);

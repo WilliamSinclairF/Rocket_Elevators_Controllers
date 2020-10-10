@@ -19,6 +19,8 @@ export default class Battery {
         this.createColumns();
     }
 
+    // makes columns and assigns each column to the floors it'll handle. one column has the basement and first floor, others handle an even share of floors.
+
     createColumns(): void {
         let floorsPerColumn = (this.building.floors - this.building.basements) / (this.totalColumns - 1);
         let elevatorsPerColumn = this.totalElevators / this.totalColumns;

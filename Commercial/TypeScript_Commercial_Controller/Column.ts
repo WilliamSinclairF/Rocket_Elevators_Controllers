@@ -16,6 +16,8 @@ export default class Column {
         this.createElevators();
     }
 
+    // makes elevators based on the elevator number passed to the constructor
+
     createElevators(): void {
         for (let i = 0; i < this.elevatorNumber; i++) {
             let gapPerElevator = Math.floor(1 + (((this.maxFloor - this.minFloor) / this.elevatorNumber) * i - 1));
@@ -23,6 +25,8 @@ export default class Column {
             this.elevatorList.push(new Elevator(this, this.id, i, defaultFloor, defaultFloor));
         }
     }
+
+    // returns elevators going in the same direction if there are any, returns idle otherwise
 
     findElevatorsByDirection(elevatorDirection: number, requestLocation: number): Array<Elevator> {
         let idle = [...this.elevatorList].filter((e) => e.direction == 0);
@@ -49,6 +53,8 @@ export default class Column {
         return idle;
     }
 
+    // compares the distance of each elevator and returns the nearest one using the array provided by the previous method
+
     findNearestElevator(elevatorDirection: number, requestLocation: number): Elevator {
         return this.findElevatorsByDirection(elevatorDirection, requestLocation)
             .map((e) => {
@@ -57,6 +63,8 @@ export default class Column {
             })
             .reduce((a, b) => (a.distance < b.distance ? a : b));
     }
+
+    // calls the previous elevator-finding related methods and sends the selected elevator on it's way
 
     requestElevator(requestLocation: number, requestDirection: number) {
         let { id } = this.findNearestElevator(requestDirection, requestLocation);

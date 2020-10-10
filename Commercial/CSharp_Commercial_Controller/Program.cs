@@ -29,7 +29,7 @@ namespace CSharp_Commercial_Controller
             //comControl.ColumnList[1].ElevatorList[4].Direction = -1;
             //comControl.ColumnList[1].ElevatorList[4].AddToQueue(0);
 
-            //comControl.ColumnList[1].FindNearestElevator(0, 1).RequestFloor(20);
+            //comControl.ColumnList[1].RequestElevator(0, 1).RequestFloor(20);
 
 
             ////Second Scenario
@@ -53,7 +53,7 @@ namespace CSharp_Commercial_Controller
             //comControl.ColumnList[2].ElevatorList[4].Direction = -1;
             //comControl.ColumnList[2].ElevatorList[4].DownQueue.Add(0);
 
-            //comControl.ColumnList[2].FindNearestElevator(0, 1).RequestFloor(36);
+            //comControl.ColumnList[2].RequestElevator(0, 1).RequestFloor(36);
             //comControl.ColumnList[2].ElevatorList[1].CombinedMethods();
             //comControl.ColumnList[2].ElevatorList[2].CombinedMethods();
             //comControl.ColumnList[2].ElevatorList[3].CombinedMethods();
@@ -83,7 +83,7 @@ namespace CSharp_Commercial_Controller
             //comControl.ColumnList[3].ElevatorList[4].Direction = -1;
             //comControl.ColumnList[3].ElevatorList[4].DownQueue.Add(0);
 
-            //comControl.ColumnList[3].FindNearestElevator(54, -1).AddToQueue(0);
+            //comControl.ColumnList[3].RequestElevator(54, -1).AddToQueue(0);
             //comControl.ColumnList[3].ElevatorList[0].CombinedMethods();
             //comControl.ColumnList[3].ElevatorList[1].CombinedMethods();
             //comControl.ColumnList[3].ElevatorList[2].CombinedMethods();
@@ -110,7 +110,7 @@ namespace CSharp_Commercial_Controller
             //comControl.ColumnList[0].ElevatorList[4].Direction = -1;
             //comControl.ColumnList[0].ElevatorList[4].DownQueue.Add(-6);
 
-            //comControl.ColumnList[0].FindNearestElevator(-3, 1).RequestFloor(0);
+            //comControl.ColumnList[0].RequestElevator(-3, 1).RequestFloor(0);
             //comControl.ColumnList[0].ElevatorList[0].CombinedMethods();
             //comControl.ColumnList[0].ElevatorList[1].CombinedMethods();
             //comControl.ColumnList[0].ElevatorList[2].CombinedMethods();
