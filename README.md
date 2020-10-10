@@ -1,8 +1,8 @@
-### Purpose of this repo:
+# Purpose of this repo:
 
 All the code you will find within this repo was written over the course of two weeks while at the CodeBoxx bootcamp.
 
-We spent one week designing the logic of each program through pseudo code, we spent the next week implementing the logic of a residential elevator controller in
+We first spent one week designing the logic of each program through pseudo code, we spent the next week implementing the logic of a residential elevator controller in
 Javascript, Python and a "bonus" of Ruby for those who still had time, which I managed to complete. The program had to manage two elevators.
 
 The final week involved compiled languages and we were asked to design a commercial elevator controller for high rise buildings. The program now had to manage 20 elevators.
@@ -12,11 +12,11 @@ Elixir was especially challenging as it is a newer language (though it is based 
 
 After doing all this work with new languages, the Javascript lover in me (I know) wanted to go back to something JS-ish. I ended writing a TypeScript version of the Java code and tweaked it a little as well. I think it's my favorite one! TypeScript is technically a compiled language, right? 😁
 
-# 🚀 Rocket Elevators Controllers - Residential Elevator Controllers - HOW TO USE : 🚀
+## 🚀 Residential Elevator Controllers - HOW TO USE : 🚀
 
-## Looking for commercial? Keep scrolling going down
+### Looking for commercial? Keep scrolling going down
 
-### Try out the interactive JS interface at:
+#### Try out the interactive JS interface at:
 
 https://williamsinclairf.github.io/Rocket_Elevators_Controllers/
 
@@ -53,7 +53,10 @@ https://github.com/WilliamSinclairF/Rocket_Elevators_Controllers/tree/master/doc
 3. Uncomment your scenario of choice
 4. Run 'Residential.rb' using your interpreter of choice.
 
-# 🚀 Rocket Elevators Controllers - Commercial Elevator Controllers - HOW TO USE: 🚀
+
+
+
+## 🚀 Commercial Elevator Controllers - HOW TO USE: 🚀
 
 ### C#:
 1. Clone the repo
