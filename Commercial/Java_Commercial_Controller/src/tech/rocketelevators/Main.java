@@ -47,19 +47,14 @@ public class Main {
 		// Scenario 4
 //		commercialBattery.columnList.get(0).elevatorList.get(0).currentFloor = -4;
 //		commercialBattery.columnList.get(0).elevatorList.get(0).direction = 0;
-//		//
 //		commercialBattery.columnList.get(0).elevatorList.get(1).currentFloor = 0;
 //		commercialBattery.columnList.get(0).elevatorList.get(1).direction = 0;
-//		//
 //		commercialBattery.columnList.get(0).elevatorList.get(2).currentFloor = -3;
 //		commercialBattery.columnList.get(0).elevatorList.get(3).currentFloor = -6;
 //		commercialBattery.columnList.get(0).elevatorList.get(4).currentFloor = -1;
-//
 //		commercialBattery.columnList.get(0).elevatorList.get(2).addToQueue(-5);
 //		commercialBattery.columnList.get(0).elevatorList.get(4).addToQueue(-6);
-//
 //		commercialBattery.columnList.get(0).elevatorList.get(3).upQueue.add(0);
-//
 //		commercialBattery.columnList.get(0).elevatorList.get(3).direction = 1;
 //		commercialBattery.columnList.get(0).requestElevator(-3, 1).requestFloor(0);
 

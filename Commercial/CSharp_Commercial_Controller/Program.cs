@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Commercial_Controller
+namespace CSharp_Commercial_Controller
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Battery comControl = new Battery(new Building(66, 6), 4, 20);
+            var comControl = new Battery(new Building(66, 6), 4, 20);
 
             ////First Scenario
             //comControl.ColumnList[1].ElevatorList[0].CurrentFloor = 20;
@@ -54,7 +54,6 @@ namespace Commercial_Controller
             //comControl.ColumnList[2].ElevatorList[4].DownQueue.Add(0);
 
             //comControl.ColumnList[2].FindNearestElevator(0, 1).RequestFloor(36);
-            //comControl.ColumnList[2].ElevatorList[0].CombinedMethods();
             //comControl.ColumnList[2].ElevatorList[1].CombinedMethods();
             //comControl.ColumnList[2].ElevatorList[2].CombinedMethods();
             //comControl.ColumnList[2].ElevatorList[3].CombinedMethods();

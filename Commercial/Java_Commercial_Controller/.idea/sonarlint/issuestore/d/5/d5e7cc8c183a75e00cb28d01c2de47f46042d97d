@@ -1,9 +1,9 @@
 
-X	java:S125	"<This block of commented-out lines of code should be removed.(Ÿğêâ8¤…ºÅĞ.
-]	java:S125#"<This block of commented-out lines of code should be removed.(¶·Œúÿÿÿÿ8„½õÅĞ.
-]	java:S125"<This block of commented-out lines of code should be removed.(¦ß¥Üûÿÿÿÿ8†ÅßÅĞ.
+]	java:S125"<This block of commented-out lines of code should be removed.(¦ß¥Üûÿÿÿÿ8ÒÿĞ.
+X	java:S125	"<This block of commented-out lines of code should be removed.(Ÿğêâ8ù€ˆÿĞ.
+]	java:S125#"<This block of commented-out lines of code should be removed.(¶·Œúÿÿÿÿ8¢é‘ÿĞ.
 g
-java:S1854"ERemove this useless assignment to local variable "commercialBattery".(åÆ‰üÿÿÿÿ8“ıªÆĞ.
-W	java:S1250"<This block of commented-out lines of code should be removed.(öıÔ_8“ıªÆĞ.
+java:S1854"ERemove this useless assignment to local variable "commercialBattery".(åÆ‰üÿÿÿÿ8ºå›ÿĞ.
+W	java:S1250"<This block of commented-out lines of code should be removed.(öıÔ_8ºå›ÿĞ.
 X
-java:S1481"6Remove this unused "commercialBattery" local variable.(åÆ‰üÿÿÿÿ8“ıªÆĞ.
+java:S1481"6Remove this unused "commercialBattery" local variable.(åÆ‰üÿÿÿÿ8ºå›ÿĞ.

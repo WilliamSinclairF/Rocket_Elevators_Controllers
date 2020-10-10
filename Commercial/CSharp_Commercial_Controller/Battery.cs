@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Commercial_Controller
+namespace CSharp_Commercial_Controller
 {
     public class Battery
     {

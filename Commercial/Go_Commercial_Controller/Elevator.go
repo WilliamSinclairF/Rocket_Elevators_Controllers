@@ -43,23 +43,14 @@ func (e *Elevator) status() {
 	fmt.Println(" ")
 }
 
+//sorts queues based on the direction of the requests
 func (e *Elevator) sortQueues() {
 	sort.SliceStable(e.upQueue, func(i, j int) bool { return e.upQueue[i] < e.upQueue[j] })
 	sort.SliceStable(e.downQueue, func(i, j int) bool { return e.downQueue[i] > e.downQueue[j] })
 }
 
+//adds to the right queue based on where the elevator is
 func (e *Elevator) addToQueue(location int) {
-	// if location < 0 {
-	// 	if e.currentFloor > location {
-	// 		e.downQueue = append(e.downQueue, location)
-	// 		e.sortQueues()
-	// 		e.requestThisElevator()
-	// 	} else {
-	// 		e.upQueue = append(e.upQueue, location)
-	// 		e.sortQueues()
-	// 		e.requestThisElevator()
-	// 	}
-	// }
 	if location > e.currentFloor {
 		e.upQueue = append(e.upQueue, location)
 		e.sortQueues()
@@ -71,6 +62,7 @@ func (e *Elevator) addToQueue(location int) {
 	}
 }
 
+//checks the amount of stops in up and down queues and adjusts direction accordingly
 func (e *Elevator) setDirection() {
 	if len(e.upQueue) > 0 && len(e.downQueue) == 0 {
 		e.direction = 1
@@ -87,6 +79,7 @@ func (e *Elevator) setDirection() {
 	}
 }
 
+// function that moves the elevator
 func (e *Elevator) requestThisElevator() {
 	e.setDirection()
 	e.status()
@@ -122,9 +115,11 @@ func (e *Elevator) requestThisElevator() {
 	}
 }
 
+//function used to request a floor from inside the elevator
+
 func (e *Elevator) requestFloor(floor int) {
 	if floor == e.currentFloor {
-		fmt.Println("I'm here", e.elevatorID)
+		fmt.Println("Elevator", e.elevatorID, "has arrived")
 	} else {
 		fmt.Println("Elevator: ", e.elevatorID)
 		fmt.Println("floor button pressed, added ", floor)

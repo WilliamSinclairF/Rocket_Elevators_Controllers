@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj",
-      "projectName": "Commercial_Controller",
-      "projectPath": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\Commercial_Controller.csproj",
+      "projectUniqueName": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\CSharp_Commercial_Controller.csproj",
+      "projectName": "CSharp_Commercial_Controller",
+      "projectPath": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\CSharp_Commercial_Controller.csproj",
       "packagesPath": "C:\\Users\\willz\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\willz\\Rocket_Elevators_Controllers\\Commercial\\CSharp_Commercial_Controller\\obj\\",
       "projectStyle": "PackageReference",

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Commercial_Controller
+namespace CSharp_Commercial_Controller
 {
     public class Column
     {
@@ -40,10 +40,10 @@ namespace Commercial_Controller
         {
             var moving = elevatorDirection == 1
                 ? (from e in this.ElevatorList
-                   where e.Direction == 1 && e.CurrentFloor < requestLocation
+                   where e.Direction == 1 && e.CurrentFloor <= requestLocation
                    select e).ToList()
                 : (from e in this.ElevatorList
-                   where e.Direction == -1 && e.CurrentFloor > requestLocation
+                   where e.Direction == -1 && e.CurrentFloor >= requestLocation
                    select e).ToList();
 
             var idle = (from e in this.ElevatorList

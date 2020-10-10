@@ -21,6 +21,8 @@ func NewColumn(battery Battery, id, elevatorNumber, minimumFloor, maximumFloor i
 	return c
 }
 
+//makes elevator structs based on the amount of elevators that was passed to the column's constructor
+
 func (c Column) createElevators() []Elevator {
 	elevators := make([]Elevator, 0)
 	for i := 0; i < c.elevatorNumber; i++ {
@@ -28,6 +30,9 @@ func (c Column) createElevators() []Elevator {
 	}
 	return elevators
 }
+
+//looks through the list of elevators to find the best one to send based on where the request came from
+//tries to get elevators moving in the same direction if there are any, if not gets elevators that will be on the floor of the request soon and if not, returns idle elevators
 
 func (c Column) findElevatorsByDirection(requestLocation, requestDirection int) []Elevator {
 	sameDirection := make([]Elevator, 0)
@@ -66,6 +71,7 @@ func (c Column) findElevatorsByDirection(requestLocation, requestDirection int) 
 	}
 }
 
+// compares the distance of each elevator and returns the nearest one
 func (c Column) findNearestElevator(requestLocation, requestDirection int) *Elevator {
 	elevators := c.findElevatorsByDirection(requestLocation, requestDirection)
 	nearestElevator := elevators[0]
@@ -79,6 +85,7 @@ func (c Column) findNearestElevator(requestLocation, requestDirection int) *Elev
 	return elevator
 }
 
+// function that starts the function chain and sends the elevator to the request
 func (c Column) requestElevator(requestLocation, requestDirection int) *Elevator {
 	nearestElevator := c.findNearestElevator(requestLocation, requestDirection)
 	nearestElevator.addToQueue(requestLocation)

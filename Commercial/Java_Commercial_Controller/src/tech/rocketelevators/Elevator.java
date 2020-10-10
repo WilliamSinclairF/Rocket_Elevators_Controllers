@@ -112,8 +112,8 @@ public class Elevator {
 
 	public void requestFloor(int floor) {
 		if (floor == this.currentFloor) {
-			System.out.println("Floor " + floor + " " + "requested, elevator " + this.elevatorId + " "
-					+ "was already on that floor and opened it's doors");
+			System.out.println(
+					"Floor " + floor + " " + "requested, elevator " + this.elevatorId + " " + "opened it's doors");
 		} else {
 			System.out.printf("Elevator %s, floor request button pressed. %n Added floor %s to queue. %n",
 					this.elevatorId, floor);

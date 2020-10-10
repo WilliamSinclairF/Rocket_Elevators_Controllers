@@ -20,6 +20,7 @@ func NewBattery(building Building, totalColumns int, totalElevators int) Battery
 	return b
 }
 
+//makes column structs based on the amount of columns the battery construct was given
 func (b Battery) createColumns() []Column {
 	columns := make([]Column, 0)
 	elevatorsPerColumn := b.totalElevators / b.totalColumns

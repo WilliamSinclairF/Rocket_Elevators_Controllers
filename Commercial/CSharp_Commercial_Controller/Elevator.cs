@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Commercial_Controller
+namespace CSharp_Commercial_Controller
 {
     public class Elevator
     {
@@ -95,7 +95,7 @@ namespace Commercial_Controller
             this.DownQueue.Reverse();
         }
 
-
+        /*
         public void SetDirection()
         {
             switch (this.Direction)
@@ -124,6 +124,39 @@ namespace Commercial_Controller
                     break;
             }
         }
+        */
+
+        public void SetDirection()
+        {
+            switch (this.Direction)
+            {
+                case 0:
+                    if (this.UpQueue.Count > this.DownQueue.Count)
+                    {
+                        this.Direction = 1;
+                    }
+                    else if (this.UpQueue.Count < this.DownQueue.Count)
+                    {
+                        this.Direction = -1;
+                    }
+                    break;
+                case 1:
+                    if (this.UpQueue.Count == 0)
+                    {
+                        this.Direction = this.DownQueue.Count > 0 ? -1 : 0;
+                    }
+                    break;
+                case -1:
+                    if (this.DownQueue.Count == 0)
+                    {
+                        this.Direction = this.UpQueue.Count > 0 ? 1 : 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         public void RequestThisElevator()
         {

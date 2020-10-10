@@ -15,6 +15,8 @@ func remove(slice []int, s int) []int {
 
 func main() {
 
+	//UNCOMMENT ONE OF THESE TO RUN SCENARIO - CHECK EACH SETUP BY GOING TO "Scenarios.go"
+
 	// scenario1()
 	// scenario2()
 	// scenario3()
